@@ -1,13 +1,23 @@
 <?php
 
 // change the following paths if necessary
-$yii=dirname(__FILE__).'/../../../../../../wamp/frameworks/yii/framework/yii.php';
-$config=dirname(__FILE__).'/protected/config/main.php';
-
-// remove the following lines when in production mode
-defined('YII_DEBUG') or define('YII_DEBUG',true);
-// specify how many levels of call stack should be shown in each log message
-defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
+$yii = dirname(__FILE__).'/../../../../../../wamp/frameworks/yii/framework/yii.php';
+$commonConfig = dirname(__FILE__).'/protected/config/main.common.php';
+$localConfig = dirname(__FILE__).'/protected/config/main.local.php';
 
 require_once($yii);
+
+// Join common and local config (if it exists)
+$common = require($commonConfig);
+
+if (file_exists($localConfig))
+{
+	// Merge the configs
+	$local = require($localConfig);
+	$config = CMap::mergeArray($common, $local);
+}
+else
+	$config = $common;
+
+// run the application
 Yii::createWebApplication($config)->run();
