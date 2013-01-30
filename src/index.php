@@ -1,7 +1,7 @@
 <?php
 
 // change the following paths if necessary
-$yii = dirname(__FILE__).'/../../../../../../wamp/frameworks/yii/framework/yii.php';
+$yii = dirname(__FILE__).'/../lib/yii/framework/yii.php';
 $commonConfig = dirname(__FILE__).'/protected/config/main.common.php';
 $localConfig = dirname(__FILE__).'/protected/config/main.local.php';
 
