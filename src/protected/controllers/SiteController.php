@@ -19,10 +19,12 @@ class SiteController extends Controller
 	{
 		if (($error = Yii::app()->errorHandler->error))
 		{
-			if (Yii::app()->request->isAjaxRequest)
-				echo $error['message'];
-			else
-				$this->render('error', $error);
+			$object = new stdClass();
+			$object->status = false;
+			$object->message = $error['message'];
+
+			echo CJSON::encode($object);
+			exit;
 		}
 	}
 
