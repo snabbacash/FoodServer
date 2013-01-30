@@ -28,6 +28,7 @@ return array(
 	'import'=>array(
 		'application.models.*',
 		'application.components.*',
+		'application.interfaces.*',
 	),
 
 	'modules'=>array(
@@ -36,9 +37,9 @@ return array(
 
 	// application components
 	'components'=>array(
-		'user'=>array(
-			// enable cookie-based authentication
-			'allowAutoLogin'=>true,
+		'authProvider'=>array(
+			'class'=>'LDAPAuthenticationProvider',
+			// define the rest in main.local.php
 		),
 		// uncomment the following to enable URLs in path-format
 		'urlManager'=>array(
