@@ -1,2 +1,3 @@
 /src/assets/
 /src/protected/runtime/
+/src/protected/config/main.local.php
