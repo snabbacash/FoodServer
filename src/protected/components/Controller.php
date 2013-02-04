@@ -41,6 +41,19 @@ class Controller extends CController
 	}
 
 	/**
+	 * Validate auth token and return 401 Not Authorized if invalid.
+	 */
+	public function checkAuth()
+	{
+		if (!(isset($_SERVER['HTTP_X_USERNAME']) && isset($_SERVER['HTTP_X_PASSWORD'])))
+			return $this->sendResponse(401);
+
+		$token = $_SERVER['HTTP_X_PASSWORD'];
+		if (!$token)
+			return $this->sendResponse(401, 'Invalid token');
+	}
+
+	/**
 	 * Send a JSON to the client.
 	 * If the status code is higher than 400, the body will be an object with the
 	 * status property of false and the body contained in a message property.
