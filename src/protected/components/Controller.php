@@ -60,6 +60,10 @@ class Controller extends CController
 		// Mimic Yii's default error messages.
 		if ($status >= 400) {
 
+			// Default error messages to HTTP Status.
+			if (empty($body))
+				$body = $this->statusCodes[$status];
+
 			$body = (object) array(
 				'status' => false,
 				'message' => $body
