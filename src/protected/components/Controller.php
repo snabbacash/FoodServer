@@ -55,14 +55,15 @@ class Controller extends CController
 			$body = $status;
 			$status = 200;
 		}
-
 		header($this->getHttpStatus($status));
 
 		// Mimic Yii's default error messages.
 		if ($status >= 400) {
-			$body = new stdClass();
-			$body->status = false;
-			$body->message = $body;
+
+			$body = (object) array(
+				'status' => false,
+				'message' => $body
+			);
 		}
 
 		$this->renderJson($body);
