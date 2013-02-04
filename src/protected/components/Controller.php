@@ -24,7 +24,11 @@ class Controller extends CController
 	public function renderJson($data)
 	{
 		$this->layout = false;
+
+		header('Access-Control-Allow-Origin: *');
+		header('Access-Control-Allow-Headers: Authorization');
 		header('Content-type: application/json');
+
 		echo CJSON::encode($data);
 		Yii::app()->end();
 	}
@@ -38,6 +42,19 @@ class Controller extends CController
 	public function getHttpStatus($status=200)
 	{
 		return 'HTTP/1.1 ' . $status . ' ' . $this->statusCodes[$status];
+	}
+
+	/**
+	 * Specify which HTTP methods are allowed
+	 *
+	 * @param mixed $methods array or comma separated string of methods.
+	 */
+	public function allow($methods)
+	{
+		if (is_array($methods))
+			$methods = implode(', ', $methods);
+
+		header("Access-Control-Allow-Methods: $methods");
 	}
 
 	/**

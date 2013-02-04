@@ -13,6 +13,7 @@ class OrderController extends Controller
 	public function actionList()
 	{
 		$this->checkAuth();
+		$this->allow(array('GET', 'POST'));
 		$this->sendResponse(array(
 			(object) array('items' => array()),
 			(object) array('items' => array())
@@ -29,6 +30,7 @@ class OrderController extends Controller
 	public function actionView($id)
 	{
 		$this->checkAuth();
+		$this->allow(array('GET', 'PUT'));
 		$this->sendResponse(array(
 			'order id' => $id
 		));
@@ -41,6 +43,7 @@ class OrderController extends Controller
 	public function actionCreate()
 	{
 		$this->checkAuth();
+		$this->allow(array('GET', 'POST'));
 		$this->sendResponse(201, array(
 			'create order' => true
 		));
@@ -54,6 +57,7 @@ class OrderController extends Controller
 	public function actionUpdate($id)
 	{
 		$this->checkAuth();
+		$this->allow(array('GET', 'PUT'));
 		$this->sendResponse(array(
 			'update order' => true
 		));

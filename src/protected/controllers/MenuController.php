@@ -14,6 +14,7 @@ class MenuController extends Controller
 	 */
 	public function actionList($week)
 	{
+		$this->allow('GET');
 		$this->sendResponse(array(
 			'week' => $week
 		));
@@ -30,6 +31,7 @@ class MenuController extends Controller
 		if (is_null($date))
 			$date = date('Y-m-d');
 
+		$this->allow('GET');
 		$this->sendResponse(array(
 			'date' => $date
 		));
