@@ -25,9 +25,9 @@ class Controller extends CController
 	{
 		$this->layout = false;
 
-		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Headers: Authorization');
-		header('Content-type: application/json');
+		$this->setHeader('Access-Control-Allow-Origin', '*');
+		$this->setHeader('Access-Control-Allow-Headers', 'Authorization');
+		$this->setHeader('Content-type:', 'application/json');
 
 		echo CJSON::encode($data);
 		Yii::app()->end();
@@ -54,7 +54,32 @@ class Controller extends CController
 		if (is_array($methods))
 			$methods = implode(', ', $methods);
 
-		header("Access-Control-Allow-Methods: $methods");
+		$this->setHeader('Access-Control-Allow-Methods', $methods);
+	}
+
+	/**
+	 * Set a header field.
+	 *
+	 * @param string $key field key.
+	 * @param string $value field value.
+	 */
+	public function setHeader($key, $value=null)
+	{
+		// Doesn't have a key
+		if (is_null($value))
+			header($key);
+		else
+			header("$key: $value");
+	}
+
+	/**
+	 * Put data is accessed through stdin
+	 * @see http://php.net/manual/en/features.file-upload.put-method.php
+	 */
+	public function getPutData()
+	{
+		parse_str(file_get_contents('php://input'), $data);
+		return $data;
 	}
 
 	/**
@@ -85,7 +110,7 @@ class Controller extends CController
 			$body = $status;
 			$status = 200;
 		}
-		header($this->getHttpStatus($status));
+		$this->setHeader($this->getHttpStatus($status));
 
 		// Mimic Yii's default error messages.
 		if ($status >= 400) {

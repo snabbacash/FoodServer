@@ -33,10 +33,13 @@ class UserController extends Controller
 	{
 		$this->checkAuth();
 		$this->allow(array('GET', 'PUT'));
+		$data = $this->getPutData();
+		// Forbidden
+		if (isset($data['user']))
+			return $this->sendResponse(403);
+
 		$this->sendResponse(array(
 			'user'=>$username
 		));
-		// Forbidden
-		$this->sendResponse(403);
 	}
 }

@@ -15,9 +15,11 @@ class MenuController extends Controller
 	public function actionList($week)
 	{
 		$this->allow('GET');
-		$this->sendResponse(array(
-			'week' => $week
-		));
+		if ($week >= 1 && $week <= 52) {
+			$this->sendResponse(array(
+				'week' => $week
+			));
+		}
 		$this->sendResponse(404);
 	}
 

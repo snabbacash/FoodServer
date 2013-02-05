@@ -19,7 +19,7 @@ class OrderController extends Controller
 			(object) array('items' => array())
 		));
 		// Unauthorized
-		$this->sendResponse(401);
+		// $this->sendResponse(401);
 	}
 
 	/**
@@ -31,8 +31,8 @@ class OrderController extends Controller
 	{
 		$this->checkAuth();
 		$this->allow(array('GET', 'PUT'));
-		$this->sendResponse(array(
-			'order id' => $id
+		$this->sendResponse((object) array(
+			'id' => $id
 		));
 		$this->sendResponse(404);
 	}
@@ -44,9 +44,13 @@ class OrderController extends Controller
 	{
 		$this->checkAuth();
 		$this->allow(array('GET', 'POST'));
-		$this->sendResponse(201, array(
-			'create order' => true
-		));
+		if (isset($_POST['items'])) {
+			$id = rand();
+			$this->setHeader('Location', "/orders/$id");
+			$this->sendResponse(201, array(
+				'id' => $id
+			));
+		}
 		// Missing field
 		$this->sendResponse(400);
 	}
@@ -58,10 +62,13 @@ class OrderController extends Controller
 	{
 		$this->checkAuth();
 		$this->allow(array('GET', 'PUT'));
-		$this->sendResponse(array(
-			'update order' => true
-		));
+		$data = $this->getPutData();
 		// Forbidden
-		$this->sendResponse(403);
+		if (isset($data['id']))
+			$this->sendResponse(403);
+
+		$this->sendResponse((object) array(
+			'id' => $id
+		));
 	}
 }

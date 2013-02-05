@@ -10,10 +10,11 @@ class AuthController extends Controller
 	public function actionLogin()
 	{
 		$this->allow('POST');
-		$this->sendResponse(201, array(
-			'token'=>''
-		));
-
+		if (isset($_POST['username'])) {
+			$this->sendResponse(201, array(
+				'token'=>''
+			));
+		}
 		$this->sendResponse(403);
 	}
 }
