@@ -62,10 +62,10 @@ class Controller extends CController
 	 */
 	public function checkAuth()
 	{
-		if (!(isset($_SERVER['HTTP_X_USERNAME']) && isset($_SERVER['HTTP_X_PASSWORD'])))
+		if (!isset($_SERVER['PHP_AUTH_PW']))
 			return $this->sendResponse(401);
 
-		$token = $_SERVER['HTTP_X_PASSWORD'];
+		$token = $_SERVER['PHP_AUTH_PW'];
 		if (!$token)
 			return $this->sendResponse(401, 'Invalid token');
 	}
