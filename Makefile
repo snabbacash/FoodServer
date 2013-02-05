@@ -1,4 +1,6 @@
-TOP=$(shell pwd)
+TOP ?= $(shell pwd)
+PHPUNIT ?= $(TOP)/bin/phpunit.phar
+TESTS ?= src/protected/tests/unit
 
 include config.mk
 
@@ -9,6 +11,11 @@ import-db:
 	@mysql $(DB_LOCAL) < dump.sql
 
 sync-db: fetch-remote-db import-db
+
+test: phpunit
+
+phpunit: $(TESTS)
+	@$(PHPUNIT) $^
 
 clean:
 	@rm -f dump.sql
