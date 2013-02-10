@@ -3,11 +3,11 @@
 /**
  * 
  * NOTE: Override these values on a machine-per-machine basis by creating 
- * procected/config/main.php which should contain a subset of what is defined 
+ * procected/config/main.local.php which should contain a subset of what is defined 
  * here. Example:
  * 
  * // use proper database credentials
- * return array(
+return array(
 	'components'=>array(
 		'db'=>array(
 			'username'=>'root',

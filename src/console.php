@@ -3,7 +3,7 @@
 // change the following paths if necessary
 $yii = dirname(__FILE__).'/../lib/yii/framework/yii.php';
 //$commonConfig = dirname(__FILE__).'/protected/config/main.common.php';
-$commonConfig = dirname(__FILE__).'/protected/config/cron.common.php';
+$commonConfig = dirname(__FILE__).'/protected/config/console.common.php';
 $localConfig = dirname(__FILE__).'/protected/config/main.local.php';
 
 

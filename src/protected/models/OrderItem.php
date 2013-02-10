@@ -1,19 +1,18 @@
 <?php
 
 /**
- * This is the model class for table "User".
+ * This is the model class for table "OrderItem".
  *
- * The followings are the available columns in table 'User':
- * @property string $id
- * @property string $username
- * @property integer $balance
- * @property string $role
+ * The followings are the available columns in table 'OrderItem':
+ * @property string $order
+ * @property string $product
+ * @property integer $amount
  */
-class User extends CActiveRecord
+class OrderItem extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return User the static model class
+	 * @return OrderItem the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -25,7 +24,7 @@ class User extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'User';
+		return 'OrderItem';
 	}
 
 	/**
@@ -36,13 +35,12 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, username, balance, role', 'required'),
-			array('balance', 'numerical', 'integerOnly'=>true),
-			array('id, role', 'length', 'max'=>10),
-			array('username', 'length', 'max'=>45),
+			array('order, product, amount', 'required'),
+			array('amount', 'numerical', 'integerOnly'=>true),
+			array('order, product', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, username, balance, role', 'safe', 'on'=>'search'),
+			array('order, product, amount', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -54,9 +52,8 @@ class User extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'orders' => array(self::HAS_MANY, 'Order', 'user'),
-			'role0' => array(self::BELONGS_TO, 'UserRole', 'role'),
-			'userTokens' => array(self::HAS_MANY, 'UserToken', 'user_id'),
+			'product0' => array(self::BELONGS_TO, 'Food', 'product'),
+			'order0' => array(self::BELONGS_TO, 'Order', 'order'),
 		);
 	}
 
@@ -66,10 +63,9 @@ class User extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'Id',
-			'username' => 'Username',
-			'balance' => 'Balance',
-			'role' => 'Role',
+			'order' => 'Order',
+			'product' => 'Product',
+			'amount' => 'Amount',
 		);
 	}
 
@@ -84,15 +80,13 @@ class User extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id,true);
+		$criteria->compare('order',$this->order,true);
 
-		$criteria->compare('username',$this->username,true);
+		$criteria->compare('product',$this->product,true);
 
-		$criteria->compare('balance',$this->balance);
+		$criteria->compare('amount',$this->amount);
 
-		$criteria->compare('role',$this->role,true);
-
-		return new CActiveDataProvider('User', array(
+		return new CActiveDataProvider('OrderItem', array(
 			'criteria'=>$criteria,
 		));
 	}

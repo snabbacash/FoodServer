@@ -37,7 +37,7 @@ class FoodPrice extends CActiveRecord
 		return array(
 			array('food, userrole, price', 'required'),
 			array('food, userrole', 'length', 'max'=>10),
-			array('price', 'length', 'max'=>5),
+			array('price', 'length', 'max'=>6),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('food, userrole, price', 'safe', 'on'=>'search'),

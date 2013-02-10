@@ -6,19 +6,14 @@
  * The followings are the available columns in table 'UserRole':
  * @property string $id
  * @property string $name
- *
- * The followings are the available model relations:
- * @property User[] $users
  */
 class UserRole extends CActiveRecord
 {
-
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @param string $className active record class name.
 	 * @return UserRole the static model class
 	 */
-	public static function model($className = __CLASS__)
+	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
@@ -39,8 +34,7 @@ class UserRole extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, name', 'required'),
-			array('id', 'length', 'max'=>10),
+			array('name', 'required'),
 			array('name', 'length', 'max'=>45),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -56,7 +50,8 @@ class UserRole extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'users'=>array(self::HAS_MANY, 'User', 'role'),
+			'foods' => array(self::MANY_MANY, 'Food', 'FoodPrice(food, userrole)'),
+			'users' => array(self::HAS_MANY, 'User', 'role'),
 		);
 	}
 
@@ -66,8 +61,8 @@ class UserRole extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id'=>'ID',
-			'name'=>'Name',
+			'id' => 'Id',
+			'name' => 'Name',
 		);
 	}
 
@@ -80,14 +75,14 @@ class UserRole extends CActiveRecord
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
-		$criteria = new CDbCriteria;
+		$criteria=new CDbCriteria;
 
-		$criteria->compare('id', $this->id, true);
-		$criteria->compare('name', $this->name, true);
+		$criteria->compare('id',$this->id,true);
 
-		return new CActiveDataProvider($this, array(
-					'criteria'=>$criteria,
-				));
+		$criteria->compare('name',$this->name,true);
+
+		return new CActiveDataProvider('UserRole', array(
+			'criteria'=>$criteria,
+		));
 	}
-
 }

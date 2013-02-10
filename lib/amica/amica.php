@@ -39,7 +39,13 @@ class AmicaParser{
 		else
 			return array();
 	}
-
+	function __toCents($float){
+		$parts = explode(",", $float);
+		$cents = 0;
+		$cents += $parts[0]*100;
+		$cents += $parts[1];
+		return $cents;
+	}
 	function __parse($lang){
 		$html =  str_get_html(file_get_contents($this->arcadaUrls[$lang]));
 		$ruokaLista = trim($html->find('body .ContentArea', 2)->innertext);
@@ -65,7 +71,6 @@ class AmicaParser{
                     '$1{}$2'
 				), $ruokaLista);
 
-		//echo $ruokaLista;
 		$arr = array();
 		$day = "";
 		$split = 1;
@@ -91,19 +96,25 @@ class AmicaParser{
 					$line[$i] = array();
 					foreach(preg_split('/\}/', trim($var), 0, PREG_SPLIT_NO_EMPTY) as $j => $part){
 						if(preg_match('/\{/', $part)){
+							
 							$part = preg_split('/\{/', trim($part), 0, PREG_SPLIT_NO_EMPTY);
 							$infoArr = array();
-							foreach(preg_split("/, /",trim($part[1]," {}"), 0, PREG_SPLIT_NO_EMPTY) as $info){
-								$infoArr[]=$info;
-							//	$infoArr[$info] = (isset($this->$infoArrOrig[$lang][$info]))?$infoArrOrig[$lang][$info]:"";
-							}
+							if (isset($part[1]))
+								$infoArr = $part[1];
 
 							$line[$i]['parts'][] = array(
 								'name' => trim($part[0]),
-								'info' => $infoArr
+								'info' => $infoArr,
 							);
+
 						} else {
-							$line[$i]['price'] = preg_split('/(\d{1,2},\d{2})/', trim($part," ()"), 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+							$prices = preg_split('/(\d{1,2},\d{2})/', trim($part," ()"), 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+							$line[$i]['price']= array(
+								'student'	=> $this->__toCents($prices[0]),
+								'other'		=> $this->__toCents($prices[1]),
+								'staff'		=> $this->__toCents($prices[2]),
+							);
+							
 						}
 					}
 				}
@@ -111,7 +122,6 @@ class AmicaParser{
 
 				$arr[date("Y-n-j", strtotime('Last Monday +'.array_search($day, $days).'days'))] = $line;
 		}
-		//$this->data[$this->lang] = $arr;
 		return $arr;
 
 	} // Parse
@@ -119,3 +129,4 @@ class AmicaParser{
 
 
 } // AmicaParser
+

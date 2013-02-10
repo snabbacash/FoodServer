@@ -36,9 +36,9 @@ class FoodPart extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, food, name', 'required'),
-			array('id, food', 'length', 'max'=>10),
-			array('name', 'length', 'max'=>50),
+			array('food, name', 'required'),
+			array('food', 'length', 'max'=>10),
+			array('name', 'length', 'max'=>100),
 			array('diets', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.

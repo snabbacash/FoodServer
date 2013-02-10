@@ -1,19 +1,18 @@
 <?php
 
 /**
- * This is the model class for table "User".
+ * This is the model class for table "Transaction".
  *
- * The followings are the available columns in table 'User':
+ * The followings are the available columns in table 'Transaction':
  * @property string $id
- * @property string $username
- * @property integer $balance
- * @property string $role
+ * @property string $timestamp
+ * @property integer $amount
  */
-class User extends CActiveRecord
+class Transaction extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return User the static model class
+	 * @return Transaction the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -25,7 +24,7 @@ class User extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'User';
+		return 'Transaction';
 	}
 
 	/**
@@ -36,13 +35,11 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, username, balance, role', 'required'),
-			array('balance', 'numerical', 'integerOnly'=>true),
-			array('id, role', 'length', 'max'=>10),
-			array('username', 'length', 'max'=>45),
+			array('timestamp, amount', 'required'),
+			array('amount', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, username, balance, role', 'safe', 'on'=>'search'),
+			array('id, timestamp, amount', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -54,9 +51,7 @@ class User extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'orders' => array(self::HAS_MANY, 'Order', 'user'),
-			'role0' => array(self::BELONGS_TO, 'UserRole', 'role'),
-			'userTokens' => array(self::HAS_MANY, 'UserToken', 'user_id'),
+			'orders' => array(self::HAS_MANY, 'Order', 'transaction'),
 		);
 	}
 
@@ -67,9 +62,8 @@ class User extends CActiveRecord
 	{
 		return array(
 			'id' => 'Id',
-			'username' => 'Username',
-			'balance' => 'Balance',
-			'role' => 'Role',
+			'timestamp' => 'Timestamp',
+			'amount' => 'Amount',
 		);
 	}
 
@@ -86,13 +80,11 @@ class User extends CActiveRecord
 
 		$criteria->compare('id',$this->id,true);
 
-		$criteria->compare('username',$this->username,true);
+		$criteria->compare('timestamp',$this->timestamp,true);
 
-		$criteria->compare('balance',$this->balance);
+		$criteria->compare('amount',$this->amount);
 
-		$criteria->compare('role',$this->role,true);
-
-		return new CActiveDataProvider('User', array(
+		return new CActiveDataProvider('Transaction', array(
 			'criteria'=>$criteria,
 		));
 	}

@@ -35,8 +35,7 @@ class Diet extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, name, short', 'required'),
-			array('id', 'length', 'max'=>10),
+			array('name, short', 'required'),
 			array('name', 'length', 'max'=>50),
 			array('short', 'length', 'max'=>5),
 			// The following rule is used by search().
