@@ -34,11 +34,15 @@ class AmicaParser{
 	private $languages = array('fi', 'se', 'en');
 
 	public function getData($lang){
+		
 		if (in_array($lang, $this->languages))
 			return $this->__parse($lang);
-		else
-			return array();
+		
+		$e = array();
+		return $e;
 	}
+
+
 	function __toCents($float){
 		$parts = explode(",", $float);
 		$cents = 0;
@@ -98,12 +102,12 @@ class AmicaParser{
 						if(preg_match('/\{/', $part)){
 							
 							$part = preg_split('/\{/', trim($part), 0, PREG_SPLIT_NO_EMPTY);
-							$infoArr = array();
+							$infoArr = "";
 							if (isset($part[1]))
 								$infoArr = $part[1];
 
 							$line[$i]['parts'][] = array(
-								'name' => trim($part[0]),
+								'name' => html_entity_decode(trim($part[0])),
 								'info' => $infoArr,
 							);
 

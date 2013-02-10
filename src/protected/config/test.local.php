@@ -1,3 +1,3 @@
 <?php
 
-define('TEST_BASE_URL', 'http://foodserver.dev.oxy.fi/index.php/');
+define('TEST_BASE_URL', 'http://localhost/food/index.php/');

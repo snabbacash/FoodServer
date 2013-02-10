@@ -7,6 +7,7 @@
  * here. Example:
  * 
  * // use proper database credentials
+<?php
 return array(
 	'components'=>array(
 		'db'=>array(
