@@ -34,7 +34,7 @@ class User extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('id, username, role', 'required'),
+			array('username, role', 'required'),
 			array('balance', 'numerical'),
 			array('id, role', 'length', 'max'=>10),
 			array('username', 'length', 'max'=>45),
