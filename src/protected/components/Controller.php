@@ -6,6 +6,8 @@
  */
 class Controller extends CController
 {
+	protected $token;
+
 	private $statusCodes = array(
 		200 => 'OK',
 		201 => 'Created',
@@ -90,9 +92,15 @@ class Controller extends CController
 		if (!isset($_SERVER['PHP_AUTH_PW']))
 			return $this->sendResponse(401);
 
-		$token = $_SERVER['PHP_AUTH_PW'];
-		if (!$token)
-			return $this->sendResponse(401, 'Invalid token');
+		$tokenString = $_SERVER['PHP_AUTH_PW'];
+		$token = UserToken::validateToken($tokenString);
+
+		// If the token is valid, store in the controller so we can check
+		// user id and role as needed.
+		if ($token == false)
+			throw new CHttpException(401, 'Invalid token');
+		else
+			return $this->token = $token;
 	}
 
 	/**
