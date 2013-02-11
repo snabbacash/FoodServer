@@ -7,6 +7,11 @@
 class Controller extends CController
 {
 	protected $token;
+	
+	/**
+	 * @var StdClass the decoded JSON data from a POST request
+	 */
+	protected $decodedJsonData;
 
 	private $statusCodes = array(
 		200 => 'OK',
@@ -17,8 +22,40 @@ class Controller extends CController
 		404 => 'Not Found',
 		500 => 'Internal Server Error',
 	);
-
+	
 	/**
+	 * @return array the filters for this controller
+	 */
+	public function filters()
+	{
+		return array(
+			'decodeJsonPostData',
+		);
+	}
+	
+	/**
+	 * Pre-action filter which decodes the JSON from $_POST['data'] and stores 
+	 * it in a property. Invalid or missing JSON triggers an exception.
+	 * @param CFilterChain $filterChain
+	 * @throws CHttpException
+	 */
+	public function filterDecodeJsonPostData($filterChain)
+	{
+		if (isset($_POST['data']))
+		{
+			$json = CJSON::decode($_POST['data'], false);
+			if ($json !== null)
+			{
+				$this->decodedJsonData = $json;
+				
+				$filterChain->run();
+			}
+
+			throw new CHttpException(400, 'Malformed JSON');
+		}
+	}
+
+		/**
 	 * Render JSON to the client.
 	 *
 	 * @param mixed $data the data to render as JSON.
