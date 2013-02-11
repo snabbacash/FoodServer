@@ -30,12 +30,10 @@ class SiteController extends Controller
 	{
 		if (($error = Yii::app()->errorHandler->error))
 		{
-			$object = new stdClass();
-			$object->status = false;
-			$object->message = $error['message'];
-
-			echo CJSON::encode($object);
-			exit;
+			$this->renderJson(array(
+				'status' => false,
+				'message' => $error['message'],
+			));
 		}
 	}
 
