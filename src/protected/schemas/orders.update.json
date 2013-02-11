@@ -1,0 +1,21 @@
+{
+	"title": "Orders Update Schema",
+	"type": "object",
+	"properties": {
+		"items": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"id" : { "type": "integer", "required": true },
+					"amount" : { "type": "integer", "required": true }
+				},
+				"additionalProperties": false
+			}
+		},
+		"confirmed": {
+			"type": "boolean"
+		}
+	},
+	"additionalProperties": false
+}

@@ -3,11 +3,12 @@
 /**
  * 
  * NOTE: Override these values on a machine-per-machine basis by creating 
- * procected/config/main.php which should contain a subset of what is defined 
+ * procected/config/main.local.php which should contain a subset of what is defined 
  * here. Example:
  * 
  * // use proper database credentials
- * return array(
+<?php
+return array(
 	'components'=>array(
 		'db'=>array(
 			'username'=>'root',
@@ -15,7 +16,6 @@
 		)
 	)
 );
- * 
  */
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
@@ -31,7 +31,6 @@ return array(
 	),
 
 	'modules'=>array(
-	
 	),
 
 	// application components
@@ -45,6 +44,17 @@ return array(
 			'urlFormat'=>'path',
 			'showScriptName'=>false,
 			'rules'=>array(
+				array('auth/login', 'pattern'=>'login', 'verb'=>'POST'),
+				array('menu/view', 'pattern'=>'menu/today', 'verb'=>'GET'),
+				array('menu/view', 'pattern'=>'menu/<date:\d{4}-\d{2}-\d{2}>', 'verb'=>'GET'),
+				array('menu/list', 'pattern'=>'menu/<week:\d{1,2}>', 'verb'=>'GET'),
+				array('order/list', 'pattern'=>'orders', 'verb'=>'GET'),
+				array('order/create', 'pattern'=>'orders', 'verb'=>'POST'),
+				array('order/view', 'pattern'=>'orders/<id:\d+>', 'verb'=>'GET'),
+				array('order/update', 'pattern'=>'orders/<id:\d+>', 'verb'=>'PUT'),
+				array('user/view', 'pattern'=>'accounts/<username:\w+>', 'verb'=>'GET'),
+				array('user/update', 'pattern'=>'accounts/<username:\w+>', 'verb'=>'PUT'),
+
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',

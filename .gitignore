@@ -1,2 +1,5 @@
 /src/assets/
 /src/protected/config/main.local.php
+/src/protected/config/test.local.php
+config.mk
+dump.sql

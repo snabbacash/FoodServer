@@ -1,17 +1,17 @@
 <?php
 
 /**
- * This is the model class for table "UserRole".
+ * This is the model class for table "Food".
  *
- * The followings are the available columns in table 'UserRole':
+ * The followings are the available columns in table 'Food':
  * @property string $id
- * @property string $name
+ * @property string $date
  */
-class UserRole extends CActiveRecord
+class Food extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return UserRole the static model class
+	 * @return Food the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -23,7 +23,7 @@ class UserRole extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'UserRole';
+		return 'Food';
 	}
 
 	/**
@@ -32,10 +32,9 @@ class UserRole extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('name', 'required'),
-			array('name', 'length', 'max'=>45),
+			array('date', 'safe'),
 			// The following rule is used by search().
-			array('id, name', 'safe', 'on'=>'search'),
+			array('id, date', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,8 +44,9 @@ class UserRole extends CActiveRecord
 	public function relations()
 	{
 		return array(
-			'foods' => array(self::MANY_MANY, 'Food', 'FoodPrice(food, userrole)'),
-			'users' => array(self::HAS_MANY, 'User', 'role'),
+			'foodParts' => array(self::HAS_MANY, 'FoodPart', 'food'),
+			'userRoles' => array(self::MANY_MANY, 'UserRole', 'FoodPrice(food, userrole)'),
+			'orderItems' => array(self::HAS_MANY, 'OrderItem', 'product'),
 		);
 	}
 
@@ -57,7 +57,7 @@ class UserRole extends CActiveRecord
 	{
 		return array(
 			'id' => 'Id',
-			'name' => 'Name',
+			'date' => 'Date',
 		);
 	}
 
@@ -69,9 +69,9 @@ class UserRole extends CActiveRecord
 	{
 		$criteria=new CDbCriteria;
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('name',$this->name,true);
+		$criteria->compare('date',$this->date,true);
 
-		return new CActiveDataProvider('UserRole', array(
+		return new CActiveDataProvider('Food', array(
 			'criteria'=>$criteria,
 		));
 	}

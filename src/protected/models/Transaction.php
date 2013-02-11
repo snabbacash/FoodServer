@@ -1,17 +1,18 @@
 <?php
 
 /**
- * This is the model class for table "UserRole".
+ * This is the model class for table "Transaction".
  *
- * The followings are the available columns in table 'UserRole':
+ * The followings are the available columns in table 'Transaction':
  * @property string $id
- * @property string $name
+ * @property string $timestamp
+ * @property integer $amount
  */
-class UserRole extends CActiveRecord
+class Transaction extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return UserRole the static model class
+	 * @return Transaction the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -23,7 +24,7 @@ class UserRole extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'UserRole';
+		return 'Transaction';
 	}
 
 	/**
@@ -32,10 +33,10 @@ class UserRole extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('name', 'required'),
-			array('name', 'length', 'max'=>45),
+			array('timestamp, amount', 'required'),
+			array('amount', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
-			array('id, name', 'safe', 'on'=>'search'),
+			array('id, timestamp, amount', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,8 +46,7 @@ class UserRole extends CActiveRecord
 	public function relations()
 	{
 		return array(
-			'foods' => array(self::MANY_MANY, 'Food', 'FoodPrice(food, userrole)'),
-			'users' => array(self::HAS_MANY, 'User', 'role'),
+			'orders' => array(self::HAS_MANY, 'Order', 'transaction'),
 		);
 	}
 
@@ -57,7 +57,8 @@ class UserRole extends CActiveRecord
 	{
 		return array(
 			'id' => 'Id',
-			'name' => 'Name',
+			'timestamp' => 'Timestamp',
+			'amount' => 'Amount',
 		);
 	}
 
@@ -69,9 +70,10 @@ class UserRole extends CActiveRecord
 	{
 		$criteria=new CDbCriteria;
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('name',$this->name,true);
+		$criteria->compare('timestamp',$this->timestamp,true);
+		$criteria->compare('amount',$this->amount);
 
-		return new CActiveDataProvider('UserRole', array(
+		return new CActiveDataProvider('Transaction', array(
 			'criteria'=>$criteria,
 		));
 	}

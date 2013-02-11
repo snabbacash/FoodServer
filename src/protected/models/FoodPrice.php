@@ -1,17 +1,18 @@
 <?php
 
 /**
- * This is the model class for table "UserRole".
+ * This is the model class for table "FoodPrice".
  *
- * The followings are the available columns in table 'UserRole':
- * @property string $id
- * @property string $name
+ * The followings are the available columns in table 'FoodPrice':
+ * @property string $food
+ * @property string $userrole
+ * @property string $price
  */
-class UserRole extends CActiveRecord
+class FoodPrice extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return UserRole the static model class
+	 * @return FoodPrice the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -23,7 +24,7 @@ class UserRole extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'UserRole';
+		return 'FoodPrice';
 	}
 
 	/**
@@ -32,10 +33,11 @@ class UserRole extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('name', 'required'),
-			array('name', 'length', 'max'=>45),
+			array('food, userrole, price', 'required'),
+			array('food, userrole', 'length', 'max'=>10),
+			array('price', 'length', 'max'=>6),
 			// The following rule is used by search().
-			array('id, name', 'safe', 'on'=>'search'),
+			array('food, userrole, price', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,8 +47,6 @@ class UserRole extends CActiveRecord
 	public function relations()
 	{
 		return array(
-			'foods' => array(self::MANY_MANY, 'Food', 'FoodPrice(food, userrole)'),
-			'users' => array(self::HAS_MANY, 'User', 'role'),
 		);
 	}
 
@@ -56,8 +56,9 @@ class UserRole extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'Id',
-			'name' => 'Name',
+			'food' => 'Food',
+			'userrole' => 'Userrole',
+			'price' => 'Price',
 		);
 	}
 
@@ -68,10 +69,11 @@ class UserRole extends CActiveRecord
 	public function search()
 	{
 		$criteria=new CDbCriteria;
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('name',$this->name,true);
+		$criteria->compare('food',$this->food,true);
+		$criteria->compare('userrole',$this->userrole,true);
+		$criteria->compare('price',$this->price,true);
 
-		return new CActiveDataProvider('UserRole', array(
+		return new CActiveDataProvider('FoodPrice', array(
 			'criteria'=>$criteria,
 		));
 	}

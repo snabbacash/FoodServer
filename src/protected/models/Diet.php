@@ -1,17 +1,18 @@
 <?php
 
 /**
- * This is the model class for table "UserRole".
+ * This is the model class for table "Diet".
  *
- * The followings are the available columns in table 'UserRole':
+ * The followings are the available columns in table 'Diet':
  * @property string $id
  * @property string $name
+ * @property string $short
  */
-class UserRole extends CActiveRecord
+class Diet extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return UserRole the static model class
+	 * @return Diet the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -23,7 +24,7 @@ class UserRole extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'UserRole';
+		return 'Diet';
 	}
 
 	/**
@@ -32,10 +33,11 @@ class UserRole extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('name', 'required'),
-			array('name', 'length', 'max'=>45),
+			array('name, short', 'required'),
+			array('name', 'length', 'max'=>50),
+			array('short', 'length', 'max'=>5),
 			// The following rule is used by search().
-			array('id, name', 'safe', 'on'=>'search'),
+			array('id, name, short', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,8 +47,6 @@ class UserRole extends CActiveRecord
 	public function relations()
 	{
 		return array(
-			'foods' => array(self::MANY_MANY, 'Food', 'FoodPrice(food, userrole)'),
-			'users' => array(self::HAS_MANY, 'User', 'role'),
 		);
 	}
 
@@ -58,6 +58,7 @@ class UserRole extends CActiveRecord
 		return array(
 			'id' => 'Id',
 			'name' => 'Name',
+			'short' => 'Short',
 		);
 	}
 
@@ -70,8 +71,9 @@ class UserRole extends CActiveRecord
 		$criteria=new CDbCriteria;
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('name',$this->name,true);
+		$criteria->compare('short',$this->short,true);
 
-		return new CActiveDataProvider('UserRole', array(
+		return new CActiveDataProvider('Diet', array(
 			'criteria'=>$criteria,
 		));
 	}
