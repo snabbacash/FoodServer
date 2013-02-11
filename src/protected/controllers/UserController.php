@@ -8,18 +8,6 @@
 class UserController extends Controller
 {
 
-	public function filters()
-	{
-		return array();
-	}
-
-	public function actionAuthenticate($username, $password)
-	{
-		if (Yii::app()->authProvider->authenticate($username, $password))
-			die("Authenticated successfully");
-		else
-			die("Invalid credentials");
-	}
 	/**
 	 * Display account information.
 	 *
