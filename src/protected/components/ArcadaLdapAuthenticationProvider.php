@@ -1,21 +1,31 @@
 <?php
 
 /**
- * Description of ArcadaLdapAuthenticationProvider
+ * Provides authentication to Arcada's LDAP.
  *
  * @author Sam Stenvall <sam@supportersplace.com>
  */
 class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements IAuthenticationProvider
 {
 
+	/**
+	 * @var string the URL to the LDAP server
+	 */
 	public $ldapUrl;
 	
+	/**
+	 * @var string the search base
+	 */
 	public $ldapSearchBase;
 	
+	/**
+	 * @var the LDAP link identifier
+	 */
 	private $_handle;
-	
-	private $_ldapEntries = array();
-	
+
+	/**
+	 * @var string the filter used for searching for users
+	 */
 	private $_filter;
 	
 	/**
@@ -31,6 +41,13 @@ class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements 
 			throw new CHttpException(500, 'Authentication provider has not been configured properly');
 	}
 
+	/**
+	 * Authenticates the user using the given credentials
+	 * @param string $username
+	 * @param string $password
+	 * @return boolean
+	 * @throws CHttpException
+	 */
 	public function authenticate($username, $password)
 	{
 		// Connect to the LDAP server
@@ -43,11 +60,13 @@ class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements 
 		return @ldap_bind($this->_handle, $this->_filter.','.$this->ldapSearchBase, $password);
 	}
 
+	/**
+	 * Returns the arcadaRoles for the currently authenticated user
+	 * @return array the roles
+	 * @throws CHttpException if no roles were found
+	 */
 	public function getRoles()
 	{
-		if ($this->_handle === null)
-			throw new CHttpException(500, 'Not connected to LDAP');
-
 		$roles = array();
 		$attributes = array('arcadaRole');
 		$result = ldap_search($this->_handle, $this->ldapSearchBase, $this->_filter, $attributes);
@@ -60,10 +79,10 @@ class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements 
 				if (is_int($key))
 					$roles[] = $role;
 		}
-		
+
 		if (empty($roles))
 			throw new CHttpException(500, 'No roles found for "' . $this->_filter . '"');
-		
+
 		return $roles;
 	}
 
