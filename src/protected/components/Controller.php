@@ -41,9 +41,12 @@ class Controller extends CController
 	 */
 	public function filterDecodeJsonPostData($filterChain)
 	{
-		if (isset($_POST['data']))
+		// Read the raw POST data
+		$postData = file_get_contents("php://input");
+		
+		if ($postData !== false)
 		{
-			$json = CJSON::decode($_POST['data'], false);
+			$json = CJSON::decode($postData, false);
 			if ($json !== null)
 			{
 				$this->decodedJsonData = $json;
