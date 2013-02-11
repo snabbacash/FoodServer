@@ -86,6 +86,16 @@ class UserToken extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+	
+	/**
+	 * Helper function for finding models by token
+	 * @param string $token the token
+	 * @return UserToken the model if found, otherwise null
+	 */
+	public function findByToken($token)
+	{
+		return self::model()->findByAttributes(array('token' => $token));
+	}
 
 	/**
 	 * Generates and returns a new token, guaranteed to be unique
