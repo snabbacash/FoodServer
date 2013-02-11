@@ -1,17 +1,18 @@
 <?php
 
 /**
- * This is the model class for table "UserRole".
+ * This is the model class for table "OrderItem".
  *
- * The followings are the available columns in table 'UserRole':
- * @property string $id
- * @property string $name
+ * The followings are the available columns in table 'OrderItem':
+ * @property string $order
+ * @property string $product
+ * @property integer $amount
  */
-class UserRole extends CActiveRecord
+class OrderItem extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return UserRole the static model class
+	 * @return OrderItem the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -23,7 +24,7 @@ class UserRole extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'UserRole';
+		return 'OrderItem';
 	}
 
 	/**
@@ -32,10 +33,11 @@ class UserRole extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('name', 'required'),
-			array('name', 'length', 'max'=>45),
+			array('order, product, amount', 'required'),
+			array('amount', 'numerical', 'integerOnly'=>true),
+			array('order, product', 'length', 'max'=>10),
 			// The following rule is used by search().
-			array('id, name', 'safe', 'on'=>'search'),
+			array('order, product, amount', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,8 +47,8 @@ class UserRole extends CActiveRecord
 	public function relations()
 	{
 		return array(
-			'foods' => array(self::MANY_MANY, 'Food', 'FoodPrice(food, userrole)'),
-			'users' => array(self::HAS_MANY, 'User', 'role'),
+			'product0' => array(self::BELONGS_TO, 'Food', 'product'),
+			'order0' => array(self::BELONGS_TO, 'Order', 'order'),
 		);
 	}
 
@@ -56,8 +58,9 @@ class UserRole extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'Id',
-			'name' => 'Name',
+			'order' => 'Order',
+			'product' => 'Product',
+			'amount' => 'Amount',
 		);
 	}
 
@@ -68,10 +71,11 @@ class UserRole extends CActiveRecord
 	public function search()
 	{
 		$criteria=new CDbCriteria;
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('name',$this->name,true);
+		$criteria->compare('order',$this->order,true);
+		$criteria->compare('product',$this->product,true);
+		$criteria->compare('amount',$this->amount);
 
-		return new CActiveDataProvider('UserRole', array(
+		return new CActiveDataProvider('OrderItem', array(
 			'criteria'=>$criteria,
 		));
 	}

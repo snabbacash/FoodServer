@@ -1,0 +1,6 @@
+# Remote server
+SSH_REMOTE=USER@HOST
+
+# Flags to auth with mysql tools
+DB_REMOTE=-u USERNAME -pPASSWORD DATABASE
+DB_LOCAL=-u USERNAME -pPASSWORD DATABASE

@@ -8,19 +8,15 @@
  * @property string $user_id
  * @property string $token
  * @property string $expires
- *
- * The followings are the available model relations:
- * @property User $user
  */
 class UserToken extends CActiveRecord
 {
-
+	private $expiresOffset = 86400; // 24h
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @param string $className active record class name.
 	 * @return UserToken the static model class
 	 */
-	public static function model($className = __CLASS__)
+	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
 	}
@@ -41,7 +37,7 @@ class UserToken extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, token, expires', 'required'),
+			array('user_id', 'required'),
 			array('user_id', 'length', 'max'=>10),
 			array('token', 'length', 'max'=>32),
 			// The following rule is used by search().
@@ -55,10 +51,8 @@ class UserToken extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
-			'user'=>array(self::BELONGS_TO, 'User', 'user_id'),
+			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 		);
 	}
 
@@ -68,10 +62,10 @@ class UserToken extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id'=>'ID',
-			'user_id'=>'User',
-			'token'=>'Token',
-			'expires'=>'Expires',
+			'id' => 'Id',
+			'user_id' => 'User',
+			'token' => 'Token',
+			'expires' => 'Expires',
 		);
 	}
 
@@ -81,19 +75,47 @@ class UserToken extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+		$criteria=new CDbCriteria;
+		$criteria->compare('id',$this->id,true);
+		$criteria->compare('user_id',$this->user_id,true);
+		$criteria->compare('token',$this->token,true);
+		$criteria->compare('expires',$this->expires,true);
 
-		$criteria = new CDbCriteria;
-
-		$criteria->compare('id', $this->id, true);
-		$criteria->compare('user_id', $this->user_id, true);
-		$criteria->compare('token', $this->token, true);
-		$criteria->compare('expires', $this->expires, true);
-
-		return new CActiveDataProvider($this, array(
-					'criteria'=>$criteria,
-				));
+		return new CActiveDataProvider('UserToken', array(
+			'criteria'=>$criteria,
+		));
 	}
 
+	/**
+	 * Automatically set the token and its expires timestamp.
+	 */
+	public function beforeSave()
+	{
+		if ($this->isNewRecord)
+		{
+			$this->token = md5(openssl_random_pseudo_bytes(32));
+			$this->expires = time() + $this->expiresOffset;
+		}
+		else
+			throw new CDbException('You are not allowed to modify tokens');
+
+		return parent::beforeSave();
+	}
+
+	/**
+	 * @return boolean if the token is valid.
+	 */
+	public function isValid()
+	{
+		return strtotime($this->expires) > time();
+	}
+
+	static public function validateToken($tokenString)
+	{
+		$token = UserToken::model()->findByAttributes(array('token'=>$tokenString));
+		if (count($token) == 0 || !$token->isValid())
+			return false;
+		else
+			return $token;
+	}
 }
