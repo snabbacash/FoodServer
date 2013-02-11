@@ -88,7 +88,7 @@ class Controller extends CController
 
 		$this->setHeader('Access-Control-Allow-Origin', '*');
 		$this->setHeader('Access-Control-Allow-Headers', 'Authorization');
-		$this->setHeader('Content-type:', 'application/json');
+		$this->setHeader('Content-Type', 'application/json');
 
 		echo CJSON::encode($data);
 		Yii::app()->end();
