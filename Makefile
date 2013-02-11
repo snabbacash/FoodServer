@@ -1,6 +1,7 @@
 TOP ?= $(shell pwd)
 PHPUNIT ?= $(TOP)/bin/phpunit.phar
 TESTS ?= src/protected/tests/unit
+TEST_BOOTSTRAP ?= src/protected/tests/bootstrap.php
 
 include config.mk
 
@@ -15,7 +16,9 @@ sync-db: fetch-remote-db import-db
 test: phpunit
 
 phpunit: $(TESTS)
-	@$(PHPUNIT) $^
+	# phpunit complains about not having a pear package that isn't really
+	# used.
+	@$(PHPUNIT) --bootstrap $(TEST_BOOTSTRAP) $^ 2>/dev/null
 
 clean:
 	@rm -f dump.sql
