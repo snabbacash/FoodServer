@@ -14,12 +14,11 @@ class OrderController extends Controller
 	{
 		$this->checkAuth();
 		$this->allow(array('GET', 'POST'));
+		// @TODO how is this supposed to do? It returns: Invalid argument supplied for foreach()
+		// $order = User::model()->with('orders.orderItems')->findAll();
 		$this->sendResponse(array(
-			(object) array('items' => array()),
-			(object) array('items' => array())
+			$this->token->user->orders, // @TODO fetch orderItems joined with food etc...
 		));
-		// Unauthorized
-		// $this->sendResponse(401);
 	}
 
 	/**
