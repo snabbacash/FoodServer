@@ -32,14 +32,11 @@ class FoodPrice extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('food, userrole, price', 'required'),
 			array('food, userrole', 'length', 'max'=>10),
 			array('price', 'length', 'max'=>6),
 			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('food, userrole, price', 'safe', 'on'=>'search'),
 		);
 	}
@@ -49,8 +46,6 @@ class FoodPrice extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 		);
 	}
@@ -73,15 +68,9 @@ class FoodPrice extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('food',$this->food,true);
-
 		$criteria->compare('userrole',$this->userrole,true);
-
 		$criteria->compare('price',$this->price,true);
 
 		return new CActiveDataProvider('FoodPrice', array(

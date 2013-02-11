@@ -3,7 +3,7 @@ class AuthApiTest extends ApiTest
 {
 	public function testLogin()
 	{
-		$result = $this->post('/login', array('username' => ''));
+		$result = $this->post('/login', array('username' => 'scholdso'));
 		$model = json_decode($result['body']);
 		$this->assertEquals($result['code'], 201);
 		$this->assertObjectHasAttribute('token', $model);

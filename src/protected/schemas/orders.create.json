@@ -1,0 +1,20 @@
+{
+	"title": "Orders Create Schema",
+	"type": "object",
+	"properties": {
+		"items": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"id" : { "type": "integer", "required": true },
+					"amount" : { "type": "integer", "required": true }
+				},
+				"additionalProperties": false
+			},
+			"required": true,
+			"additionalProperties": false
+		}
+	},
+	"additionalProperties": false
+}

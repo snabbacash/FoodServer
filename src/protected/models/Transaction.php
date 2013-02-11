@@ -32,13 +32,10 @@ class Transaction extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('timestamp, amount', 'required'),
 			array('amount', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, timestamp, amount', 'safe', 'on'=>'search'),
 		);
 	}
@@ -48,8 +45,6 @@ class Transaction extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 			'orders' => array(self::HAS_MANY, 'Order', 'transaction'),
 		);
@@ -73,15 +68,9 @@ class Transaction extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('id',$this->id,true);
-
 		$criteria->compare('timestamp',$this->timestamp,true);
-
 		$criteria->compare('amount',$this->amount);
 
 		return new CActiveDataProvider('Transaction', array(

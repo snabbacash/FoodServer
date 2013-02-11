@@ -1,12 +1,13 @@
 <?php
 
 return array(
-	/*
 	'sample1'=>array(
-		'name' => '',
+		'name' => 'student',
 	),
 	'sample2'=>array(
-		'name' => '',
+		'name' => 'staff',
 	),
-	*/
+	'sample3'=>array(
+		'name' => 'other',
+	),
 );

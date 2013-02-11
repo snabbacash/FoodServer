@@ -6,6 +6,8 @@
  */
 class Controller extends CController
 {
+	protected $token;
+
 	private $statusCodes = array(
 		200 => 'OK',
 		201 => 'Created',
@@ -90,9 +92,15 @@ class Controller extends CController
 		if (!isset($_SERVER['PHP_AUTH_PW']))
 			return $this->sendResponse(401);
 
-		$token = $_SERVER['PHP_AUTH_PW'];
-		if (!$token)
-			return $this->sendResponse(401, 'Invalid token');
+		$tokenString = $_SERVER['PHP_AUTH_PW'];
+		$token = UserToken::validateToken($tokenString);
+
+		// If the token is valid, store in the controller so we can check
+		// user id and role as needed.
+		if ($token == false)
+			throw new CHttpException(401, 'Invalid token');
+		else
+			return $this->token = $token;
 	}
 
 	/**
@@ -126,5 +134,33 @@ class Controller extends CController
 		}
 
 		$this->renderJson($body);
+	}
+
+	public function getSchema($schema)
+	{
+		$path = __DIR__ . "/../schemas/$schema.json";
+		if (file_exists($path))
+			return json_decode(file_get_contents($path));
+		else
+			throw new CHttpException(500, 'Internal error');
+	}
+
+	public function validate($schema, $request)
+	{
+		$validator = new JsonSchema\Validator();
+		// The JsonSchema library does not conform with the latest spec.
+		// Among other things, the required property should be attached to each
+		// property.
+		$validator->check($request, $this->getSchema($schema));
+		if (!$validator->isValid())
+		{
+			$message = '';
+			foreach ($validator->getErrors() as $error)
+			{
+				$message .= sprintf('[%s] %s\n', $error['property'], $error['message']);
+			}
+			throw new CHttpException(400, $message);
+		}
+		return true;
 	}
 }
