@@ -4,14 +4,18 @@
  * This is the model class for table "UserToken".
  *
  * The followings are the available columns in table 'UserToken':
- * @property string $id
  * @property string $user_id
  * @property string $token
- * @property string $expires
+ * @property string $created
  */
 class UserToken extends CActiveRecord
 {
-	private $expiresOffset = 86400; // 24h
+	
+	/**
+	 * @var int how long (seconds) a token should remain valid
+	 */
+	private $_tokenLifetime = 2592000; // a month
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return UserToken the static model class
@@ -34,15 +38,12 @@ class UserToken extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
-			array('user_id', 'required'),
+			array('user_id, token', 'required'),
+			array('token', 'unique'),
 			array('user_id', 'length', 'max'=>10),
 			array('token', 'length', 'max'=>32),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, user_id, token, expires', 'safe', 'on'=>'search'),
+			array('id, user_id, token, created', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -65,7 +66,7 @@ class UserToken extends CActiveRecord
 			'id' => 'Id',
 			'user_id' => 'User',
 			'token' => 'Token',
-			'expires' => 'Expires',
+			'created' => 'Created',
 		);
 	}
 
@@ -79,7 +80,7 @@ class UserToken extends CActiveRecord
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('user_id',$this->user_id,true);
 		$criteria->compare('token',$this->token,true);
-		$criteria->compare('expires',$this->expires,true);
+		$criteria->compare('created',$this->created,true);
 
 		return new CActiveDataProvider('UserToken', array(
 			'criteria'=>$criteria,
@@ -87,19 +88,18 @@ class UserToken extends CActiveRecord
 	}
 
 	/**
-	 * Automatically set the token and its expires timestamp.
+	 * Generates and returns a new token, guaranteed to be unique
+	 * @return string the token
 	 */
-	public function beforeSave()
+	public function generateToken()
 	{
-		if ($this->isNewRecord)
+		do
 		{
-			$this->token = md5(openssl_random_pseudo_bytes(32));
-			$this->expires = time() + $this->expiresOffset;
+			$token = md5(openssl_random_pseudo_bytes(32));
 		}
-		else
-			throw new CDbException('You are not allowed to modify tokens');
+		while (self::model()->findByAttributes(array('token' => $token)) !== null);
 
-		return parent::beforeSave();
+		return $token;
 	}
 
 	/**
@@ -107,7 +107,7 @@ class UserToken extends CActiveRecord
 	 */
 	public function isValid()
 	{
-		return strtotime($this->expires) > time();
+		return strtotime($this->created) + $this->_tokenLifetime > time();
 	}
 
 	static public function validateToken($tokenString)
