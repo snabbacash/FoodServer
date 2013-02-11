@@ -30,23 +30,44 @@ class AuthController extends Controller
 
 			if ($user === null)
 			{
-				// TODO: Determine role
+				// Get the user role
+				$role = $authProvider->getRole();
+				
+				// Create the user
 				$user = new User();
 				$user->username = $username;
-				$user->balance = 0.00;
-				$user->role = 1;
-				$user->save();
+				$user->role = $role->id;
+				
+				if (!$user->save())
+					throw new CHttpException(500, 'Unable to create user');
 			}
+			
+			// Re-use existing tokens when they expire
+			if ($user->token !== null)
+			{
+				$token = $user->token;
 
-			// TODO: Re-use valid tokens
-			$token = new UserToken;
-			$token->user_id = $user->id;
-			$token->save();
-
-			$this->sendResponse(201, array(
-				'token' => $token->token,
-				'expires' => $token->expires,
-			));
+				// Generate a new token if the current one has expired
+				if (!$token->isValid())
+				{
+					$token->token = $token->generateToken();
+					
+					// MySQL time seems to not be the same as PHP time
+					$token->created = date("Y-m-d H:i:s");
+					$token->save();
+				}
+			}
+			else
+			{
+				// Create a new token and associate it with the user
+				$token = new UserToken();
+				$token->user_id = $user->id;
+				$token->token = $token->generateToken();
+				$token->save();
+			}
+			
+			// Send the token
+			$this->sendResponse(201, array('token' => $token->token));
 		}
 
 		throw new CHttpException(403, 'Invalid credentials');
