@@ -30,6 +30,7 @@ class Controller extends CController
 	{
 		return array(
 			'decodeJsonPostData',
+			'requireToken',
 		);
 	}
 	
@@ -57,8 +58,26 @@ class Controller extends CController
 			throw new CHttpException(400, 'Malformed JSON');
 		}
 	}
+	
+	/**
+	 * Filter that checks that a valid token has been passed in the request
+	 * @param CFilterChain $filterChain the filter chain
+	 * @throws CHttpException if the token is invalid or missing
+	 */
+	public function filterRequireToken($filterChain)
+	{
+		if (isset($this->decodedJsonData->token))
+		{
+			$token = UserToken::model()->findByToken($this->decodedJsonData->token);
 
-		/**
+			if ($token !== null && $token->isValid())
+				$filterChain->run();
+		}
+
+		throw new CHttpException(401, 'Invalid token');
+	}
+
+	/**
 	 * Render JSON to the client.
 	 *
 	 * @param mixed $data the data to render as JSON.
@@ -122,25 +141,6 @@ class Controller extends CController
 	{
 		parse_str(file_get_contents('php://input'), $data);
 		return $data;
-	}
-
-	/**
-	 * Validate auth token and return 401 Not Authorized if invalid.
-	 */
-	public function checkAuth()
-	{
-		if (!isset($_SERVER['PHP_AUTH_PW']))
-			return $this->sendResponse(401);
-
-		$tokenString = $_SERVER['PHP_AUTH_PW'];
-		$token = UserToken::validateToken($tokenString);
-
-		// If the token is valid, store in the controller so we can check
-		// user id and role as needed.
-		if ($token == false)
-			throw new CHttpException(401, 'Invalid token');
-		else
-			return $this->token = $token;
 	}
 
 	/**

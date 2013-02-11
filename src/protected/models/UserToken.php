@@ -107,7 +107,7 @@ class UserToken extends CActiveRecord
 		{
 			$token = md5(openssl_random_pseudo_bytes(32));
 		}
-		while (self::model()->findByAttributes(array('token' => $token)) !== null);
+		while ($this->findByToken($token) !== null);
 
 		return $token;
 	}
@@ -119,13 +119,5 @@ class UserToken extends CActiveRecord
 	{
 		return strtotime($this->created) + $this->_tokenLifetime > time();
 	}
-
-	static public function validateToken($tokenString)
-	{
-		$token = UserToken::model()->findByAttributes(array('token'=>$tokenString));
-		if (count($token) == 0 || !$token->isValid())
-			return false;
-		else
-			return $token;
-	}
+	
 }

@@ -15,7 +15,6 @@ class UserController extends Controller
 	 */
 	public function actionView($username)
 	{
-		$this->checkAuth();
 		$this->allow(array('GET', 'PUT'));
 		$this->sendResponse(array(
 			'user'=>$username
@@ -31,7 +30,6 @@ class UserController extends Controller
 	 */
 	public function actionUpdate($username)
 	{
-		$this->checkAuth();
 		$this->allow(array('GET', 'PUT'));
 		$data = $this->getPutData();
 		// Forbidden

@@ -2,17 +2,12 @@
 
 class OrderController extends Controller
 {
-	public function filters()
-	{
-		return array();
-	}
-
+	
 	/**
 	 * Display all orders from today.
 	 */
 	public function actionList()
 	{
-		$this->checkAuth();
 		$this->allow(array('GET', 'POST'));
 		// @TODO how is this supposed to do? It returns: Invalid argument supplied for foreach()
 		// $order = User::model()->with('orders.orderItems')->findAll();
@@ -28,7 +23,6 @@ class OrderController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$this->checkAuth();
 		$this->allow(array('GET', 'PUT'));
 		$this->sendResponse((object) array(
 			'id' => $id
@@ -41,7 +35,6 @@ class OrderController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$this->checkAuth();
 		$this->allow(array('GET', 'POST'));
 		if (isset($_POST['items'])) {
 			$id = rand();
@@ -59,7 +52,6 @@ class OrderController extends Controller
 	 */
 	public function actionUpdate($id)
 	{
-		$this->checkAuth();
 		$this->allow(array('GET', 'PUT'));
 		$data = $this->getPutData();
 		// Forbidden

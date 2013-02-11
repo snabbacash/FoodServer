@@ -7,6 +7,17 @@ class AuthController extends Controller
 {
 
 	/**
+	 * Overriden from Controller because we can't check for the token here
+	 * @return array the filters for this controller
+	 */
+	public function filters()
+	{
+		return array(
+			'decodeJsonPostData',
+		);
+	}
+
+	/**
 	 * Authenticates a user and responds with a token that should be used in 
 	 * further communication.
 	 * @throws CHttpException if the supplied credentials are invalid
