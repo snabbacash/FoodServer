@@ -61,11 +61,37 @@ class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements 
 	}
 
 	/**
+	 * Returns the role that the user should have
+	 * @return UserRole
+	 */
+	public function getRole()
+	{
+		$arcadaRoles = $this->getArcadaRoles();
+		$role = UserRole::ROLE_OTHER;
+
+		foreach ($arcadaRoles as $arcadaRole)
+		{
+			if ($arcadaRole == 'employee')
+			{
+				$role = UserRole::ROLE_STAFF;
+				break;
+			}
+			elseif ($arcadaRole == 'student')
+			{
+				$role = UserRole::ROLE_STUDENT;
+				break;
+			}
+		}
+
+		return UserRole::model()->findByAttributes(array('name' => $role));
+	}
+
+	/**
 	 * Returns the arcadaRoles for the currently authenticated user
 	 * @return array the roles
 	 * @throws CHttpException if no roles were found
 	 */
-	public function getRoles()
+	private function getArcadaRoles()
 	{
 		$roles = array();
 		$attributes = array('arcadaRole');
