@@ -38,7 +38,7 @@ return array(
 	// application components
 	'components'=>array(
 		'authProvider'=>array(
-			'class'=>'LDAPAuthenticationProvider',
+			'class'=>'ArcadaLdapAuthenticationProvider',
 			// define the rest in main.local.php
 		),
 		'user'=>array(

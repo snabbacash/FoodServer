@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Description of LDAPAuthenticationProvider
+ * Description of ArcadaLdapAuthenticationProvider
  *
  * @author Sam Stenvall <sam@supportersplace.com>
  */
-class LDAPAuthenticationProvider extends CApplicationComponent implements IAuthenticationProvider
+class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements IAuthenticationProvider
 {
 
 	public $ldapUrl;
