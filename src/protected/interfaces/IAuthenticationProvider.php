@@ -17,8 +17,8 @@ interface IAuthenticationProvider
 	public function authenticate($username, $password);
 
 	/**
-	 * Returns the roles the user has
-	 * @return array the various roles the user has
+	 * Returns the role that the user should have
+	 * @return UserRole
 	 */
-	public function getRoles();
+	public function getRole();
 }
