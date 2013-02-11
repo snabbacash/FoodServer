@@ -1,7 +1,8 @@
 <?php
 
 // change the following paths if necessary
-$yii = dirname(__FILE__).'/../lib/yii/framework/yii.php';
+define('LIB_PATH', dirname(__FILE__).'/../lib');
+$yii = LIB_PATH.'/yii/framework/yii.php';
 $commonConfig = dirname(__FILE__).'/protected/config/main.common.php';
 $localConfig = dirname(__FILE__).'/protected/config/main.local.php';
 
@@ -18,6 +19,8 @@ if (file_exists($localConfig))
 }
 else
 	$config = $common;
+
+Yii::setPathOfAlias('JsonSchema', LIB_PATH.'/json-schema/src/JsonSchema');
 
 // run the application
 Yii::createWebApplication($config)->run();

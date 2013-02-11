@@ -1,0 +1,9 @@
+{
+	"title": "User Update Schema",
+	"type": "object",
+	"properties": {
+		"username": { "type": "string" },
+		"balance": { "type": "float" }
+	},
+	"additionalProperties": false
+}

@@ -127,4 +127,32 @@ class Controller extends CController
 
 		$this->renderJson($body);
 	}
+
+	public function getSchema($schema)
+	{
+		$path = __DIR__ . "/../schemas/$schema.json";
+		if (file_exists($path))
+			return json_decode(file_get_contents($path));
+		else
+			throw new CHttpException(500, 'Internal error');
+	}
+
+	public function validate($schema, $request)
+	{
+		$validator = new JsonSchema\Validator();
+		// The JsonSchema library does not conform with the latest spec.
+		// Among other things, the required property should be attached to each
+		// property.
+		$validator->check($request, $this->getSchema($schema));
+		if (!$validator->isValid())
+		{
+			$message = '';
+			foreach ($validator->getErrors() as $error)
+			{
+				$message .= sprintf('[%s] %s\n', $error['property'], $error['message']);
+			}
+			throw new CHttpException(400, $message);
+		}
+		return true;
+	}
 }
