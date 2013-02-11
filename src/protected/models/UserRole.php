@@ -9,6 +9,14 @@
  */
 class UserRole extends CActiveRecord
 {
+	
+	/**
+	 * Role names
+	 */
+	const ROLE_STUDENT = 'student';
+	const ROLE_STAFF   = 'staff';
+	const ROLE_OTHER   = 'other';
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return UserRole the static model class
