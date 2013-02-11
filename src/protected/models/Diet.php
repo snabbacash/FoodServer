@@ -32,14 +32,11 @@ class Diet extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('name, short', 'required'),
 			array('name', 'length', 'max'=>50),
 			array('short', 'length', 'max'=>5),
 			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, name, short', 'safe', 'on'=>'search'),
 		);
 	}
@@ -49,8 +46,6 @@ class Diet extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 		);
 	}
@@ -73,15 +68,9 @@ class Diet extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('id',$this->id,true);
-
 		$criteria->compare('name',$this->name,true);
-
 		$criteria->compare('short',$this->short,true);
 
 		return new CActiveDataProvider('Diet', array(

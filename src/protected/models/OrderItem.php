@@ -32,14 +32,11 @@ class OrderItem extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('order, product, amount', 'required'),
 			array('amount', 'numerical', 'integerOnly'=>true),
 			array('order, product', 'length', 'max'=>10),
 			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('order, product, amount', 'safe', 'on'=>'search'),
 		);
 	}
@@ -49,8 +46,6 @@ class OrderItem extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 			'product0' => array(self::BELONGS_TO, 'Food', 'product'),
 			'order0' => array(self::BELONGS_TO, 'Order', 'order'),
@@ -75,15 +70,9 @@ class OrderItem extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('order',$this->order,true);
-
 		$criteria->compare('product',$this->product,true);
-
 		$criteria->compare('amount',$this->amount);
 
 		return new CActiveDataProvider('OrderItem', array(

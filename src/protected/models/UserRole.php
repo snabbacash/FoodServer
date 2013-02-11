@@ -31,13 +31,10 @@ class UserRole extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('name', 'required'),
 			array('name', 'length', 'max'=>45),
 			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, name', 'safe', 'on'=>'search'),
 		);
 	}
@@ -47,8 +44,6 @@ class UserRole extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 			'foods' => array(self::MANY_MANY, 'Food', 'FoodPrice(food, userrole)'),
 			'users' => array(self::HAS_MANY, 'User', 'role'),
@@ -72,13 +67,8 @@ class UserRole extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('id',$this->id,true);
-
 		$criteria->compare('name',$this->name,true);
 
 		return new CActiveDataProvider('UserRole', array(

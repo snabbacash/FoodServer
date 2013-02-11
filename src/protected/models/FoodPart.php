@@ -41,7 +41,6 @@ class FoodPart extends CActiveRecord
 			array('name', 'length', 'max'=>100),
 			array('diets', 'length', 'max'=>20),
 			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, food, name, diets', 'safe', 'on'=>'search'),
 		);
 	}
@@ -51,8 +50,6 @@ class FoodPart extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 			'food0' => array(self::BELONGS_TO, 'Food', 'food'),
 		);
@@ -77,17 +74,10 @@ class FoodPart extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('id',$this->id,true);
-
 		$criteria->compare('food',$this->food,true);
-
 		$criteria->compare('name',$this->name,true);
-
 		$criteria->compare('diets',$this->diets,true);
 
 		return new CActiveDataProvider('FoodPart', array(
