@@ -6,7 +6,7 @@
  * The followings are the available columns in table 'User':
  * @property string $id
  * @property string $username
- * @property integer $balance
+ * @property double $balance
  * @property string $role
  */
 class User extends CActiveRecord
@@ -33,15 +33,11 @@ class User extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
-			array('id, username, balance, role', 'required'),
-			array('balance', 'numerical', 'integerOnly'=>true),
+			array('id, username, role', 'required'),
+			array('balance', 'numerical'),
 			array('id, role', 'length', 'max'=>10),
 			array('username', 'length', 'max'=>45),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, username, balance, role', 'safe', 'on'=>'search'),
 		);
 	}
@@ -51,8 +47,6 @@ class User extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 			'orders' => array(self::HAS_MANY, 'Order', 'user'),
 			'role0' => array(self::BELONGS_TO, 'UserRole', 'role'),
@@ -79,17 +73,10 @@ class User extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('id',$this->id,true);
-
 		$criteria->compare('username',$this->username,true);
-
 		$criteria->compare('balance',$this->balance);
-
 		$criteria->compare('role',$this->role,true);
 
 		return new CActiveDataProvider('User', array(
