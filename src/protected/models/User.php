@@ -8,6 +8,8 @@
  * @property string $username
  * @property double $balance
  * @property string $role
+ * 
+ * @property UserToken $token
  */
 class User extends CActiveRecord
 {
@@ -50,7 +52,7 @@ class User extends CActiveRecord
 		return array(
 			'orders' => array(self::HAS_MANY, 'Order', 'user'),
 			'role0' => array(self::BELONGS_TO, 'UserRole', 'role'),
-			'userTokens' => array(self::HAS_MANY, 'UserToken', 'user_id'),
+			'token' => array(self::HAS_ONE, 'UserToken', 'user_id'),
 		);
 	}
 
