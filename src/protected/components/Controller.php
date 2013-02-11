@@ -106,19 +106,6 @@ class Controller extends CController
 	}
 
 	/**
-	 * Specify which HTTP methods are allowed
-	 *
-	 * @param mixed $methods array or comma separated string of methods.
-	 */
-	public function allow($methods)
-	{
-		if (is_array($methods))
-			$methods = implode(', ', $methods);
-
-		$this->setHeader('Access-Control-Allow-Methods', $methods);
-	}
-
-	/**
 	 * Set a header field.
 	 *
 	 * @param string $key field key.

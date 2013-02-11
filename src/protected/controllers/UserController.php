@@ -9,13 +9,25 @@ class UserController extends Controller
 {
 
 	/**
+	 * @return array the filters for this controller
+	 */
+	public function filters()
+	{
+		return array_merge(parent::filters(), array(
+			array(
+				'RestrictHttpMethodsFilter + view, update',
+				'methods' => array('GET', 'PUT'),
+			),
+		));
+	}
+	
+	/**
 	 * Display account information.
 	 *
 	 * @param string $username the username.
 	 */
 	public function actionView($username)
 	{
-		$this->allow(array('GET', 'PUT'));
 		$this->sendResponse(array(
 			'user'=>$username
 		));
@@ -30,7 +42,6 @@ class UserController extends Controller
 	 */
 	public function actionUpdate($username)
 	{
-		$this->allow(array('GET', 'PUT'));
 		$data = $this->getPutData();
 		// Forbidden
 		if (isset($data['user']))

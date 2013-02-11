@@ -14,6 +14,10 @@ class AuthController extends Controller
 	{
 		return array(
 			'decodeJsonPostData',
+			array(
+				'RestrictHttpMethodsFilter',
+				'methods'=>'POST',
+			),
 		);
 	}
 
@@ -24,8 +28,6 @@ class AuthController extends Controller
 	 */
 	public function actionLogin()
 	{
-		// TODO: Use filters instead of allow()
-		$this->allow('POST');
 		$this->validate('auth.login', $this->decodedJsonData);
 
 		// Authenticate before doing anything else

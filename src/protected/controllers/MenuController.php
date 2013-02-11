@@ -2,9 +2,18 @@
 
 class MenuController extends Controller
 {
+	
+	/**
+	 * @return array the filters for this controller
+	 */
 	public function filters()
 	{
-		return array();
+		return array_merge(parent::filters(), array(
+			array(
+				'RestrictHttpMethodsFilter + list, view',
+				'methods'=>'GET',
+			),
+		));
 	}
 
 	/**
@@ -14,7 +23,6 @@ class MenuController extends Controller
 	 */
 	public function actionList($week)
 	{
-		$this->allow('GET');
 		if ($week >= 1 && $week <= 52) {
 			$this->sendResponse(array(
 				'week' => $week
@@ -33,7 +41,6 @@ class MenuController extends Controller
 		if (is_null($date))
 			$date = date('Y-m-d');
 
-		$this->allow('GET');
 		$this->sendResponse(array(
 			'date' => $date
 		));
