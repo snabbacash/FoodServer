@@ -18,7 +18,30 @@ class UserController extends Controller
 				'RestrictHttpMethodsFilter + view, update',
 				'methods' => array('GET', 'PUT'),
 			),
+			array(
+				'RestrictHttpMethodsFilter + getBalance',
+				'methods' => array('GET'),
+			),
 		));
+	}
+	
+	/**
+	 * Returns the user's balance
+	 * @throws CHttpException if the user cannot be found for some reason 
+	 * (almost theoretically impossible to reach that code)
+	 */
+	public function actionGetBalance()
+	{
+		$user = User::model()->findByToken($this->token);
+
+		if ($user !== null)
+		{
+			$this->sendResponse(array(
+				'balance'=>$user->balance,
+			));
+		}
+
+		throw new CHttpException(404, 'Could not find user');
 	}
 	
 	/**
