@@ -19,29 +19,30 @@ class UserController extends Controller
 				'methods' => array('GET', 'PUT'),
 			),
 			array(
-				'RestrictHttpMethodsFilter + getBalance',
+				'RestrictHttpMethodsFilter + info',
 				'methods' => array('GET'),
 			),
 		), parent::filters());
 	}
 	
 	/**
-	 * Returns the user's balance
-	 * @throws CHttpException if the user cannot be found for some reason 
-	 * (almost theoretically impossible to reach that code)
+	 * Returns details about the user
+	 * @throws CHttpException if the user can't be found
 	 */
-	public function actionGetBalance()
+	public function actionInfo()
 	{
 		$user = User::model()->findByToken($this->token);
 
 		if ($user !== null)
 		{
 			$this->sendResponse(array(
-				'balance'=>(double)$user->balance,
+				'name'=>$user->name,
+				'balance'=>(double) $user->balance,
+				'role'=>$user->role->name
 			));
 		}
 
-		throw new CHttpException(404, 'Could not find user');
+		throw new CHttpException(404, 'Unknown user');
 	}
 	
 	/**
