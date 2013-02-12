@@ -32,18 +32,36 @@ class MenuController extends Controller
 	}
 
 	/**
-	 * Display the menu for a specific date.
-	 *
-	 * @param string $date date specified as YYYY-MM-DD. Defaults to todays date.
+	 * Display the menu for a specific date. If the date is omitted, today's 
+	 * menu will be returned
+	 * @param string $date date specified as YYYY-MM-DD
 	 */
-	public function actionView($date=null)
+	public function actionView($date = null)
 	{
 		if (is_null($date))
 			$date = date('Y-m-d');
 
-		$this->sendResponse(array(
-			'date' => $date
-		));
-		$this->sendResponse(404);
+		// Find the user, we need his role
+		// TODO: Add Controller::loadUser()
+		$user = User::model()->findByToken($this->token);
+
+		$menu = array();
+		$meals = Food::model()->findAllByAttributes(array('date'=>$date));
+
+		foreach ($meals as $meal)
+		{
+			$menuItem = new StdClass();
+			$menuItem->id = $meal->id;
+			$menuItem->parts = array();
+			$menuItem->price = $meal->getPrice($user->role_id);
+
+			foreach ($meal->foodParts as $foodPart)
+				$menuItem->parts[] = $foodPart->name;
+			
+			$menu[] = $menuItem;
+		}
+
+		$this->sendResponse($menu);
 	}
+	
 }

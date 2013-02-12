@@ -75,4 +75,20 @@ class Food extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+	
+	/**
+	 * Returns the price for the specified role
+	 * @param int $roleId the role 
+	 * @return mixed the food price as a double or null if the price could not 
+	 * be determined
+	 */
+	public function getPrice($roleId)
+	{
+		$foodPrice = FoodPrice::model()->findByAttributes(array(
+			'food'=>$this->id, 'userrole'=>$roleId));
+
+		if ($foodPrice !== null)
+			return $foodPrice->price / 100;
+	}
+	
 }
