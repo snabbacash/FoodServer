@@ -53,7 +53,7 @@ class AuthController extends Controller
 				$user = new User();
 				$user->username = $username;
 				$user->name = $name;
-				$user->role = $role->id;
+				$user->role_id = $role->id;
 				
 				if (!$user->save())
 					throw new CHttpException(500, 'Unable to create user');
