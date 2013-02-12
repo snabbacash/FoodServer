@@ -36,6 +36,7 @@ class UserController extends Controller
 		if ($user !== null)
 		{
 			$this->sendResponse(array(
+				'username'=>$user->username,
 				'name'=>$user->name,
 				'balance'=>(double) $user->balance,
 				'role'=>$user->role->name
