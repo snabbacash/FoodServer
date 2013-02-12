@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table 'Order':
  * @property string $id
+ * @property string $created
  * @property string $user
  * @property string $transaction
  */
@@ -64,6 +65,7 @@ class Order extends CActiveRecord
 	{
 		return array(
 			'id' => 'Id',
+			'created'=> 'Created',
 			'user' => 'User',
 			'transaction' => 'Transaction',
 		);
