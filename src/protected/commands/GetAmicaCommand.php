@@ -52,10 +52,7 @@ class GetAmicaCommand extends CConsoleCommand {
 					$fprice->userrole = $userRole->id;
 					$fprice->price = $price;
 					
-					if($debug)
-						$fprice->id=0;
-					else 
-						$fprice->save();	
+					$fprice->save();	
 					
 				} // Price
 				echo "\n";

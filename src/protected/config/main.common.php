@@ -7,9 +7,10 @@
  * here. Example:
  * 
  * // use proper database credentials
- * return array(
+ return array(
 	'components'=>array(
 		'db'=>array(
+			//'connectionString'=>'mysql:host=localhost;port=3306;dbname=cash',
 			'username'=>'root',
 			'password'=>'password',
 		)
@@ -65,9 +66,9 @@ return array(
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 			),
 		),
-		// use tunneling
+		
 		'db'=>array(
-			'connectionString'=>'mysql:host=localhost;port=9987;dbname=cash',
+			'connectionString'=>'mysql:host=localhost;port=3306;dbname=cash',
 			'emulatePrepare'=>true,
 			'username'=>'',
 			'password'=>'',
