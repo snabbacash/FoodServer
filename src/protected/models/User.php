@@ -85,4 +85,19 @@ class User extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+	
+	/**
+	 * Finds a user based on his associated token
+	 * @param string $token the token
+	 * @return User the user model or null if not found
+	 */
+	public function findByToken($token)
+	{
+		$with = array('token'=>array(
+				'condition'=>'token = :token',
+				'params'=>array(':token'=>$token)));
+
+		return self::model()->with($with)->find();
+	}
+	
 }
