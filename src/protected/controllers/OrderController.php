@@ -8,7 +8,7 @@ class OrderController extends Controller
 	 */
 	public function filters()
 	{
-		return array_merge(parent::filters(), array(
+		return array_merge(array(
 			array(
 				'RestrictHttpMethodsFilter + list, create',
 				'methods'=>array('GET', 'POST'),
@@ -17,7 +17,7 @@ class OrderController extends Controller
 				'RestrictHttpMethodsFilter + view, update',
 				'methods'=>array('GET', 'PUT'),
 			),
-		));
+		), parent::filters());
 	}
 	
 	/**

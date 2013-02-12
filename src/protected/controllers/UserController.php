@@ -13,7 +13,7 @@ class UserController extends Controller
 	 */
 	public function filters()
 	{
-		return array_merge(parent::filters(), array(
+		return array_merge(array(
 			array(
 				'RestrictHttpMethodsFilter + view, update',
 				'methods' => array('GET', 'PUT'),
@@ -22,7 +22,7 @@ class UserController extends Controller
 				'RestrictHttpMethodsFilter + getBalance',
 				'methods' => array('GET'),
 			),
-		));
+		), parent::filters());
 	}
 	
 	/**

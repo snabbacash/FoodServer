@@ -13,11 +13,11 @@ class AuthController extends Controller
 	public function filters()
 	{
 		return array(
-			'decodeJsonPostData',
 			array(
 				'RestrictHttpMethodsFilter',
 				'methods'=>'POST',
 			),
+			'decodeJsonPostData',
 		);
 	}
 

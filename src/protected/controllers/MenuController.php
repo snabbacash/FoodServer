@@ -8,12 +8,12 @@ class MenuController extends Controller
 	 */
 	public function filters()
 	{
-		return array_merge(parent::filters(), array(
+		return array_merge(array(
 			array(
 				'RestrictHttpMethodsFilter + list, view',
 				'methods'=>'GET',
 			),
-		));
+		), parent::filters());
 	}
 
 	/**
