@@ -35,28 +35,33 @@ class Controller extends CController
 	}
 	
 	/**
-	 * Pre-action filter which decodes the JSON from $_POST['data'] and stores 
+	 * Pre-action filter which decodes the JSON from POST requests and stores 
 	 * it in a property. Invalid or missing JSON triggers an exception.
 	 * @param CFilterChain $filterChain
 	 * @throws CHttpException
 	 */
 	public function filterDecodeJsonPostData($filterChain)
 	{
-		// Read the raw POST data
-		$postData = file_get_contents("php://input");
-		
-		if ($postData !== false)
+		if (Yii::app()->request->isPostRequest)
 		{
-			$json = CJSON::decode($postData, false);
-			if ($json !== null)
+			// Read the raw POST data
+			$postData = file_get_contents("php://input");
+
+			if ($postData !== false)
 			{
-				$this->decodedJsonData = $json;
-				
-				$filterChain->run();
+				$json = CJSON::decode($postData, false);
+				if ($json !== null)
+				{
+					$this->decodedJsonData = $json;
+
+					$filterChain->run();
+				}
 			}
 
 			throw new CHttpException(400, 'Malformed JSON');
 		}
+		
+		$filterChain->run();
 	}
 	
 	/**
@@ -66,13 +71,13 @@ class Controller extends CController
 	 */
 	public function filterRequireToken($filterChain)
 	{
-		if (isset($this->decodedJsonData->token))
+			if (isset($this->decodedJsonData->token))
 		{
 			$token = UserToken::model()->findByToken($this->decodedJsonData->token);
 
 			if ($token !== null && $token->isValid())
 				$filterChain->run();
-		}
+			}
 
 		throw new CHttpException(401, 'Invalid token');
 	}
