@@ -6,6 +6,7 @@
  * The followings are the available columns in table 'User':
  * @property string $id
  * @property string $username
+ * @property string $name
  * @property double $balance
  * @property string $role
  * 
@@ -36,11 +37,12 @@ class User extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('username, role', 'required'),
+			array('username, name, role', 'required'),
 			array('balance', 'numerical'),
 			array('id, role', 'length', 'max'=>10),
 			array('username', 'length', 'max'=>45),
-			array('id, username, balance, role', 'safe', 'on'=>'search'),
+			array('name', 'length', 'max'=>255),
+			array('id, username, name, balance, role', 'safe', 'on'=>'search'),
 		);
 	}
 
