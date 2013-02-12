@@ -72,7 +72,7 @@ class Controller extends CController
 	 */
 	public function filterRequireToken($filterChain)
 	{
-		$tokenData = false;
+		$tokenData = '';
 		
 		// POST requests
 		if (Yii::app()->request->isPostRequest)
@@ -87,20 +87,17 @@ class Controller extends CController
 				$tokenData = $_GET['token'];
 		}
 
-		if ($tokenData)
+		$token = UserToken::model()->findByToken($tokenData);
+
+		if ($token !== null && $token->isValid())
 		{
-			$token = UserToken::model()->findByToken($tokenData);
+			// Store the token
+			$this->token = $token->token;
 
-			if ($token !== null && $token->isValid())
-			{
-				// Store the token
-				$this->token = $token->token;
-
-				$filterChain->run();
-			}
+			$filterChain->run();
 		}
-
-		throw new CHttpException(401, 'Invalid token');
+		else
+			throw new CHttpException(401, 'Invalid token');
 	}
 
 	/**
