@@ -74,17 +74,10 @@ class Controller extends CController
 	{
 		$tokenData = '';
 		
-		// POST requests
-		if (Yii::app()->request->isPostRequest)
+		if ($_SERVER['PHP_AUTH_USER'] && isset($_SERVER['PHP_AUTH_PW']) 
+			&& $_SERVER['PHP_AUTH_USER'] == Yii::app()->params['httpUsername'])
 		{
-			if (isset($this->decodedJsonData->token))
-				$tokenData = $this->decodedJsonData->token;
-		}
-		// GET requests
-		elseif (Yii::app()->request->requestType == 'GET')
-		{
-			if (isset($_GET['token']))
-				$tokenData = $_GET['token'];
+			$tokenData = $_SERVER['PHP_AUTH_PW'];
 		}
 
 		$token = UserToken::model()->findByToken($tokenData);

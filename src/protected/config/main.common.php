@@ -93,5 +93,8 @@ return array(
 	'params'=>array(
 		// this is used in contact page
 		'adminEmail'=>'webmaster@example.com',
+		
+		// username used for in combination with the API token
+		'httpUsername'=>'api_token',
 	),
 );
