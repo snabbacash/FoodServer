@@ -59,6 +59,29 @@ class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements 
 		
 		return @ldap_bind($this->_handle, $this->_filter.','.$this->ldapSearchBase, $password);
 	}
+	
+	/**
+	 * Returns the full name of the user
+	 * @return string the name
+	 * @throws CHttpException if the name cannot be determined
+	 */
+	public function getName()
+	{
+		$name = '';
+		$attributes = array('cn');
+		$result = ldap_search($this->_handle, $this->ldapSearchBase, $this->_filter, $attributes);
+
+		if (ldap_count_entries($this->_handle, $result) === 1)
+		{
+			$entries = ldap_get_entries($this->_handle, $result);
+			$name = $entries[0]['cn'][0];
+		}
+
+		if (empty($name))
+			throw new CHttpException(500, 'Could not find CN for "' . $this->_filter . '"');
+
+		return $name;
+	}
 
 	/**
 	 * Returns the role that the user should have

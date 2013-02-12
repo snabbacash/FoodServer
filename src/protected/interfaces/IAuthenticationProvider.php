@@ -17,6 +17,12 @@ interface IAuthenticationProvider
 	public function authenticate($username, $password);
 
 	/**
+	 * Returns the real name of the user
+	 * @return string the name
+	 */
+	public function getName();
+	
+	/**
 	 * Returns the role that the user should have
 	 * @return UserRole
 	 */

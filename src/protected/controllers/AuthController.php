@@ -33,6 +33,8 @@ class AuthController extends Controller
 		// Authenticate before doing anything else
 		$username = $this->decodedJsonData->user;
 		$password = $this->decodedJsonData->pass;
+		
+		/* @var $authProvider IAuthenticationProvider */
 		$authProvider = Yii::app()->authProvider;
 
 		if ($authProvider->authenticate($username, $password))
@@ -43,12 +45,14 @@ class AuthController extends Controller
 
 			if ($user === null)
 			{
-				// Get the user role
+				// Get the user role and name
 				$role = $authProvider->getRole();
+				$name = $authProvider->getName();
 				
 				// Create the user
 				$user = new User();
 				$user->username = $username;
+				$user->name = $name;
 				$user->role = $role->id;
 				
 				if (!$user->save())
