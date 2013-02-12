@@ -37,7 +37,7 @@ class UserController extends Controller
 		if ($user !== null)
 		{
 			$this->sendResponse(array(
-				'balance'=>$user->balance,
+				'balance'=>(double)$user->balance,
 			));
 		}
 
