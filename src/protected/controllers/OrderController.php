@@ -10,8 +10,8 @@ class OrderController extends Controller
 	{
 		return array_merge(array(
 			array(
-				'RestrictHttpMethodsFilter + list, create',
-				'methods'=>array('GET', 'POST'),
+				'RestrictHttpMethodsFilter + list',
+				'methods'=>array('GET'),
 			),
 			array(
 				'RestrictHttpMethodsFilter + view, update',
@@ -21,15 +21,34 @@ class OrderController extends Controller
 	}
 	
 	/**
-	 * Display all orders from today.
+	 * Returns all orders for the specified date
+	 * @param string $date date in YYYY-MM-DD format
 	 */
-	public function actionList()
+	public function actionList($date)
 	{
-		// @TODO how is this supposed to do? It returns: Invalid argument supplied for foreach()
-		// $order = User::model()->with('orders.orderItems')->findAll();
-		$this->sendResponse(array(
-			$this->token->user->orders, // @TODO fetch orderItems joined with food etc...
-		));
+		// Make sure $date is in the sought format
+		$time = CDateTimeParser::parse($date, 'yyyy-MM-dd');
+
+		if ($time === false)
+			throw new CHttpException(400, 'Invalid date specified');
+
+		// Find the orders and return them
+		$orders = Order::model()->findAll('DATE(created) = :date', array(':date'=>$date));
+		$jsonData = array();
+
+		foreach ($orders as $order)
+		{
+			// TODO: Make a toJson() method somewhere (perhaps a base model)
+			$jsonData[] = array(
+				'id'=>$order->id,
+				'created'=>$order->created,
+				'user'=>$order->user,
+				'transaction'=>$order->transaction,
+				'status'=>$order->status,
+			);
+		}
+
+		$this->sendResponse($jsonData);
 	}
 
 	/**
