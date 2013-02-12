@@ -8,9 +8,17 @@
  * @property string $created
  * @property string $user
  * @property string $transaction
+ * @property string $status
  */
 class Order extends CActiveRecord
 {
+	
+	/**
+	 * Order statuses
+	 */
+	const STATUS_NEW = 'new';
+	const STATUS_COMPLETED = 'completed';
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Order the static model class
@@ -68,6 +76,7 @@ class Order extends CActiveRecord
 			'created'=> 'Created',
 			'user' => 'User',
 			'transaction' => 'Transaction',
+			'status'=>'Status',
 		);
 	}
 
