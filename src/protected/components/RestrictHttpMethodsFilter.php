@@ -34,7 +34,7 @@ class RestrictHttpMethodsFilter extends CFilter
 		$requestType = Yii::app()->request->requestType;
 
 		if (in_array($requestType, $this->methods))
-			$filterChain->run();
+			return true;
 
 		throw new CHttpException(400, 'Invalid request type');
 	}
