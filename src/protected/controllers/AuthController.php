@@ -31,15 +31,15 @@ class AuthController extends Controller
 		$this->validate('auth.login', $this->decodedJsonData);
 
 		// Authenticate before doing anything else
-		$username = $this->decodedJsonData->username;
-		$password = $this->decodedJsonData->password;
+		$username = $this->decodedJsonData->user;
+		$password = $this->decodedJsonData->pass;
 		$authProvider = Yii::app()->authProvider;
 
 		if ($authProvider->authenticate($username, $password))
 		{
 			// Create a user account if this is the first time the user logs in
 			$user = User::model()->findByAttributes(array(
-				'username' => $this->decodedJsonData->username));
+				'username'=>$username));
 
 			if ($user === null)
 			{

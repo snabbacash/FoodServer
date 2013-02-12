@@ -4,8 +4,8 @@
 	"description": "API Auth Login",
 	"type": "object",
 	"properties": {
-		"username": { "type": "string", "required": true },
-		"password": { "type": "string", "required": true }
+		"user": { "type": "string", "required": true },
+		"pass": { "type": "string", "required": true }
 	},
 	"additionalProperties": false
 }
