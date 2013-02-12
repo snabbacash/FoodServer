@@ -8,8 +8,9 @@
  * @property string $username
  * @property string $name
  * @property double $balance
- * @property string $role
+ * @property string $role_id
  * 
+ * @property UserRole $role
  * @property UserToken $token
  */
 class User extends CActiveRecord
@@ -37,12 +38,12 @@ class User extends CActiveRecord
 	public function rules()
 	{
 		return array(
-			array('username, name, role', 'required'),
+			array('username, name, role_id', 'required'),
 			array('balance', 'numerical'),
-			array('id, role', 'length', 'max'=>10),
+			array('id, role_id', 'length', 'max'=>10),
 			array('username', 'length', 'max'=>45),
 			array('name', 'length', 'max'=>255),
-			array('id, username, name, balance, role', 'safe', 'on'=>'search'),
+			array('id, username, name, balance, role_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -53,7 +54,7 @@ class User extends CActiveRecord
 	{
 		return array(
 			'orders' => array(self::HAS_MANY, 'Order', 'user'),
-			'role0' => array(self::BELONGS_TO, 'UserRole', 'role'),
+			'role' => array(self::BELONGS_TO, 'UserRole', 'role_id'),
 			'token' => array(self::HAS_ONE, 'UserToken', 'user_id'),
 		);
 	}
@@ -67,7 +68,7 @@ class User extends CActiveRecord
 			'id' => 'Id',
 			'username' => 'Username',
 			'balance' => 'Balance',
-			'role' => 'Role',
+			'role_id' => 'Role',
 		);
 	}
 
@@ -81,7 +82,7 @@ class User extends CActiveRecord
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('username',$this->username,true);
 		$criteria->compare('balance',$this->balance);
-		$criteria->compare('role',$this->role,true);
+		$criteria->compare('role_id',$this->role,true);
 
 		return new CActiveDataProvider('User', array(
 			'criteria'=>$criteria,
