@@ -65,19 +65,40 @@ class Controller extends CController
 	}
 	
 	/**
-	 * Filter that checks that a valid token has been passed in the request
+	 * Filter that checks that a valid token has been passed in the request and 
+	 * if so stores it in $token
 	 * @param CFilterChain $filterChain the filter chain
 	 * @throws CHttpException if the token is invalid or missing
 	 */
 	public function filterRequireToken($filterChain)
 	{
-			if (isset($this->decodedJsonData->token))
+		$tokenData = false;
+		
+		// POST requests
+		if (Yii::app()->request->isPostRequest)
 		{
-			$token = UserToken::model()->findByToken($this->decodedJsonData->token);
+			if (isset($this->decodedJsonData->token))
+				$tokenData = $this->decodedJsonData->token;
+		}
+		// GET requests
+		elseif (Yii::app()->request->requestType == 'GET')
+		{
+			if (isset($_GET['token']))
+				$tokenData = $_GET['token'];
+		}
+
+		if ($tokenData)
+		{
+			$token = UserToken::model()->findByToken($tokenData);
 
 			if ($token !== null && $token->isValid())
+			{
+				// Store the token
+				$this->token = $token->token;
+
 				$filterChain->run();
 			}
+		}
 
 		throw new CHttpException(401, 'Invalid token');
 	}
