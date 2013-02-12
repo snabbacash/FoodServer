@@ -74,7 +74,7 @@ class Controller extends CController
 	{
 		$tokenData = '';
 		
-		if ($_SERVER['PHP_AUTH_USER'] && isset($_SERVER['PHP_AUTH_PW']) 
+		if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) 
 			&& $_SERVER['PHP_AUTH_USER'] == Yii::app()->params['httpUsername'])
 		{
 			$tokenData = $_SERVER['PHP_AUTH_PW'];
