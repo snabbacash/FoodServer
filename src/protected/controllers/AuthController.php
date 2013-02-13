@@ -17,7 +17,7 @@ class AuthController extends Controller
 				'RestrictHttpMethodsFilter',
 				'methods'=>'POST',
 			),
-			'decodeJsonPostData',
+			'decodeJsonInputData',
 		);
 	}
 

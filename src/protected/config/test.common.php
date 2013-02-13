@@ -4,6 +4,8 @@
 // protected/config/test.php file.
 //
 // define('TEST_BASE_URL', 'http://test.local/index.php/');
+// define('TEST_USER', 'arcada');
+// define('TEST_PASSWORD', 'password');
 
 if (file_exists(__DIR__.'/test.local.php'))
 	require_once(__DIR__.'/test.local.php');

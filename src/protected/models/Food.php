@@ -7,7 +7,7 @@
  * @property string $id
  * @property string $date
  */
-class Food extends CActiveRecord
+class Food extends CActiveRecord implements ApiSerializable
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -75,20 +75,46 @@ class Food extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	 * Returns the price for the specified role
-	 * @param int $roleId the role 
-	 * @return mixed the food price as a double or null if the price could not 
+	 * @param int $roleId the role
+	 * @return mixed the food price as a double or null if the price could not
 	 * be determined
 	 */
-	public function getPrice($roleId)
-	{
-		$foodPrice = FoodPrice::model()->findByAttributes(array(
-			'food'=>$this->id, 'userrole'=>$roleId));
+		public function getPrice($roleId)
+		{
+			$foodPrice = FoodPrice::model()->findByAttributes(array(
+				'food'=>$this->id, 'userrole'=>$roleId));
 
-		if ($foodPrice !== null)
-			return $foodPrice->price / 100;
+			if ($foodPrice !== null)
+				return $foodPrice->price;
+		}
+
+	/**
+	 * @return array a serialized version of Food to be usd by the API.
+	 */
+	public function serialize()
+	{
+		$foodPrices = FoodPrice::model()->findAllByAttributes(array(
+			'food'=>$this->id));
+
+		// Change the price objects into an associative array keyed per rolename.
+		foreach ($foodPrices as $foodPrice)
+		{
+			foreach ($this->userRoles as $role)
+				if ($role->id === $foodPrice->userrole)
+					$roleName = $role->name;
+
+			$price[$roleName] = $foodPrice->price;
+		}
+
+		return array(
+			'date'=>$this->date,
+			'id'=>$this->id,
+			'parts'=>$this->foodParts,
+			'price'=>$price,
+		);
 	}
-	
+
 }

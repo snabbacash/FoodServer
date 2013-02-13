@@ -19,7 +19,7 @@ class UserController extends Controller
 				'methods' => array('GET', 'PUT'),
 			),
 			array(
-				'RestrictHttpMethodsFilter + info',
+				'RestrictHttpMethodsFilter + index',
 				'methods' => array('GET'),
 			),
 		), parent::filters());
@@ -29,21 +29,11 @@ class UserController extends Controller
 	 * Returns details about the user
 	 * @throws CHttpException if the user can't be found
 	 */
-	public function actionInfo()
+	public function actionIndex()
 	{
 		$user = User::model()->findByToken($this->token);
 
-		if ($user !== null)
-		{
-			$this->sendResponse(array(
-				'username'=>$user->username,
-				'name'=>$user->name,
-				'balance'=>(double) $user->balance,
-				'role'=>$user->role->name
-			));
-		}
-
-		throw new CHttpException(404, 'Unknown user');
+		return $this->actionView($user->username);
 	}
 	
 	/**
@@ -53,11 +43,12 @@ class UserController extends Controller
 	 */
 	public function actionView($username)
 	{
-		$this->sendResponse(array(
-			'user'=>$username
-		));
-		// Forbidden
-		$this->sendResponse(403);
+		$user = User::model()->findByAttributes(array('username'=>$username));
+
+		if ($user !== null)
+			$this->sendResponse($user);
+
+		throw new CHttpException(404, 'Unknown user');
 	}
 
 	/**
@@ -67,13 +58,12 @@ class UserController extends Controller
 	 */
 	public function actionUpdate($username)
 	{
+		$user = User::model()->findByAttributes(array('username'=>$username));
 		$data = $this->getPutData();
 		// Forbidden
 		if (isset($data['user']))
 			return $this->sendResponse(403);
 
-		$this->sendResponse(array(
-			'user'=>$username
-		));
+		$this->sendResponse($user);
 	}
 }

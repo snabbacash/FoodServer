@@ -8,7 +8,7 @@
  * @property string $userrole
  * @property string $price
  */
-class FoodPrice extends CActiveRecord
+class FoodPrice extends CActiveRecord implements ApiSerializable
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -49,8 +49,6 @@ class FoodPrice extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 		);
 	}
@@ -73,19 +71,24 @@ class FoodPrice extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('food',$this->food,true);
-
 		$criteria->compare('userrole',$this->userrole,true);
-
 		$criteria->compare('price',$this->price,true);
 
 		return new CActiveDataProvider('FoodPrice', array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	/**
+	 * @return array a serialized version of the FoodPrice to be usd by the API.
+	 */
+	public function serialize()
+	{
+		return array(
+			'role'=>$this->userrole,
+			'price'=>$this->price
+		);
 	}
 }

@@ -7,9 +7,9 @@
 class Controller extends CController
 {
 	protected $token;
-	
+
 	/**
-	 * @var StdClass the decoded JSON data from a POST request
+	 * @var StdClass the decoded JSON data from a POST or PUT request
 	 */
 	protected $decodedJsonData;
 
@@ -22,29 +22,29 @@ class Controller extends CController
 		404 => 'Not Found',
 		500 => 'Internal Server Error',
 	);
-	
+
 	/**
 	 * @return array the filters for this controller
 	 */
 	public function filters()
 	{
 		return array(
-			'decodeJsonPostData',
+			'decodeJsonInputData',
 			'requireToken',
 		);
 	}
-	
+
 	/**
-	 * Pre-action filter which decodes the JSON from POST requests and stores 
-	 * it in a property. Invalid or missing JSON triggers an exception.
+	 * Pre-action filter which decodes the JSON from POST and PUT requests and
+	 * stores it in a property. Invalid or missing JSON triggers an exception.
 	 * @param CFilterChain $filterChain
 	 * @throws CHttpException
 	 */
-	public function filterDecodeJsonPostData($filterChain)
+	public function filterDecodeJsonInputData($filterChain)
 	{
 		if (Yii::app()->request->isPostRequest || Yii::app()->request->isPutRequest)
 		{
-			// Read the raw POST data
+			// Read the raw PUT/POST data
 			$postData = file_get_contents("php://input");
 
 			if ($postData !== false)
@@ -58,14 +58,14 @@ class Controller extends CController
 				}
 			}
 
-			throw new CHttpException(400, 'Malformed JSON');
+			throw new CHttpException(400, 'Malformed JSON' . $postData);
 		}
-		
+
 		$filterChain->run();
 	}
-	
+
 	/**
-	 * Filter that checks that a valid token has been passed in the request and 
+	 * Filter that checks that a valid token has been passed in the request and
 	 * if so stores it in $token
 	 * @param CFilterChain $filterChain the filter chain
 	 * @throws CHttpException if the token is invalid or missing
@@ -73,8 +73,8 @@ class Controller extends CController
 	public function filterRequireToken($filterChain)
 	{
 		$tokenData = '';
-		
-		if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) 
+
+		if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])
 			&& $_SERVER['PHP_AUTH_USER'] == Yii::app()->params['httpUsername'])
 		{
 			$tokenData = $_SERVER['PHP_AUTH_PW'];
@@ -106,7 +106,7 @@ class Controller extends CController
 		$this->setHeader('Access-Control-Allow-Headers', 'Authorization');
 		$this->setHeader('Content-Type', 'application/json');
 
-		echo CJSON::encode($data);
+		echo JSON::encode($data);
 		Yii::app()->end();
 	}
 
@@ -179,6 +179,12 @@ class Controller extends CController
 		$this->renderJson($body);
 	}
 
+	/**
+	 * Retrieve schema definition.
+	 * @param string filename of schema without extension.
+	 * @return object JSON decoded contents of schema.
+	 * @throws CHttpException
+	 */
 	public function getSchema($schema)
 	{
 		$path = __DIR__ . "/../schemas/$schema.json";
@@ -188,6 +194,12 @@ class Controller extends CController
 			throw new CHttpException(500, 'Internal error');
 	}
 
+	/**
+	 * @param string filename of schema without extension.
+	 * @param mixed request array.
+	 * @return boolean true on success.
+	 * @throws CHttpException
+	 */
 	public function validate($schema, $request)
 	{
 		$validator = new JsonSchema\Validator();
