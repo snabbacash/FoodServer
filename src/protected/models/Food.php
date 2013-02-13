@@ -88,7 +88,7 @@ class Food extends CActiveRecord
 			'food'=>$this->id, 'userrole'=>$roleId));
 
 		if ($foodPrice !== null)
-			return $foodPrice->price / 100;
+			return $foodPrice->price;
 	}
 	
 }
