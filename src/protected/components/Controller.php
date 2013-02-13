@@ -60,12 +60,12 @@ class Controller extends CController
 
 			throw new CHttpException(400, 'Malformed JSON' . $postData);
 		}
-		
+
 		$filterChain->run();
 	}
 
 	/**
-	 * Filter that checks that a valid token has been passed in the request and 
+	 * Filter that checks that a valid token has been passed in the request and
 	 * if so stores it in $token
 	 * @param CFilterChain $filterChain the filter chain
 	 * @throws CHttpException if the token is invalid or missing
@@ -73,8 +73,8 @@ class Controller extends CController
 	public function filterRequireToken($filterChain)
 	{
 		$tokenData = '';
-		
-		if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) 
+
+		if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])
 			&& $_SERVER['PHP_AUTH_USER'] == Yii::app()->params['httpUsername'])
 		{
 			$tokenData = $_SERVER['PHP_AUTH_PW'];
