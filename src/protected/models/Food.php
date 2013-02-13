@@ -75,11 +75,11 @@ class Food extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	 * Returns the price for the specified role
-	 * @param int $roleId the role 
-	 * @return mixed the food price as a double or null if the price could not 
+	 * @param int $roleId the role
+	 * @return mixed the food price as a double or null if the price could not
 	 * be determined
 	 */
 		public function getPrice($roleId)
