@@ -7,9 +7,9 @@
 class Controller extends CController
 {
 	protected $token;
-	
+
 	/**
-	 * @var StdClass the decoded JSON data from a POST request
+	 * @var StdClass the decoded JSON data from a POST or PUT request
 	 */
 	protected $decodedJsonData;
 
@@ -22,29 +22,29 @@ class Controller extends CController
 		404 => 'Not Found',
 		500 => 'Internal Server Error',
 	);
-	
+
 	/**
 	 * @return array the filters for this controller
 	 */
 	public function filters()
 	{
 		return array(
-			'decodeJsonPostData',
+			'decodeJsonInputData',
 			'requireToken',
 		);
 	}
-	
+
 	/**
-	 * Pre-action filter which decodes the JSON from POST requests and stores 
-	 * it in a property. Invalid or missing JSON triggers an exception.
+	 * Pre-action filter which decodes the JSON from POST and PUT requests and
+	 * stores it in a property. Invalid or missing JSON triggers an exception.
 	 * @param CFilterChain $filterChain
 	 * @throws CHttpException
 	 */
-	public function filterDecodeJsonPostData($filterChain)
+	public function filterDecodeJsonInputData($filterChain)
 	{
-		if (Yii::app()->request->isPostRequest)
+		if (Yii::app()->request->isPostRequest || Yii::app()->request->isPutRequest)
 		{
-			// Read the raw POST data
+			// Read the raw PUT/POST data
 			$postData = file_get_contents("php://input");
 
 			if ($postData !== false)
@@ -58,12 +58,12 @@ class Controller extends CController
 				}
 			}
 
-			throw new CHttpException(400, 'Malformed JSON');
+			throw new CHttpException(400, 'Malformed JSON' . $postData);
 		}
 		
 		$filterChain->run();
 	}
-	
+
 	/**
 	 * Filter that checks that a valid token has been passed in the request and 
 	 * if so stores it in $token
