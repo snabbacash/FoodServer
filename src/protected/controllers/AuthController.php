@@ -29,7 +29,6 @@ class AuthController extends Controller
 	public function actionLogin()
 	{
 		$this->validate('auth.login', $this->decodedJsonData);
-
 		// Authenticate before doing anything else
 		$username = $this->decodedJsonData->user;
 		$password = $this->decodedJsonData->pass;

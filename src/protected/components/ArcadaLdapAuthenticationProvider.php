@@ -51,7 +51,9 @@ class ArcadaLdapAuthenticationProvider extends CApplicationComponent implements 
 	public function authenticate($username, $password)
 	{
 		// Connect to the LDAP server
-		$this->_handle = @ldap_connect($this->ldapUrl);
+        
+		$this->_handle = ldap_connect($this->ldapUrl);
+        
 		if ($this->_handle === false)
 			throw new CHttpException(500, 'Could not connect to LDAP server');
 		

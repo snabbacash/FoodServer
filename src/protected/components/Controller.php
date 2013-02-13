@@ -42,7 +42,7 @@ class Controller extends CController
 	 */
 	public function filterDecodeJsonPostData($filterChain)
 	{
-		if (Yii::app()->request->isPostRequest)
+		if (Yii::app()->request->isPostRequest || Yii::app()->request->isPutRequest)
 		{
 			// Read the raw POST data
 			$postData = file_get_contents("php://input");

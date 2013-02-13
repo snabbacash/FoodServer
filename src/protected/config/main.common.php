@@ -7,10 +7,9 @@
  * here. Example:
  * 
  * // use proper database credentials
- return array(
+ * return array(
 	'components'=>array(
 		'db'=>array(
-			//'connectionString'=>'mysql:host=localhost;port=3306;dbname=cash',
 			'username'=>'root',
 			'password'=>'password',
 		)
@@ -40,6 +39,8 @@ return array(
 	'components'=>array(
 		'authProvider'=>array(
 			'class'=>'ArcadaLdapAuthenticationProvider',
+            'ldapUrl'=>'ldaps://ldap.arcada.fi',
+            'ldapSearchBase'=>'ou=people,dc=arcada,dc=fi'
 			// define the rest in main.local.php
 		),
 		'user'=>array(
@@ -55,7 +56,8 @@ return array(
 				array('menu/view', 'pattern'=>'menu/today', 'verb'=>'GET'),
 				array('menu/view', 'pattern'=>'menu/<date:\d{4}-\d{2}-\d{2}>', 'verb'=>'GET'),
 				array('menu/list', 'pattern'=>'menu/<week:\d{1,2}>', 'verb'=>'GET'),
-				array('order/list', 'pattern'=>'orders', 'verb'=>'GET'),
+				array('order/list', 'pattern'=>'orders/<date:\d{4}-\d{2}-\d{2}>', 'verb'=>'GET'),
+				array('order/listStatus', 'pattern'=>'orders/<status:(new|confirmed)>', 'verb'=>'GET'),
 				array('order/create', 'pattern'=>'orders', 'verb'=>'POST'),
 				array('order/view', 'pattern'=>'orders/<id:\d+>', 'verb'=>'GET'),
 				array('order/update', 'pattern'=>'orders/<id:\d+>', 'verb'=>'PUT'),
@@ -66,13 +68,14 @@ return array(
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
 			),
 		),
-		
+		// use tunneling
 		'db'=>array(
 			'connectionString'=>'mysql:host=localhost;port=3306;dbname=cash',
 			'emulatePrepare'=>true,
-			'username'=>'',
-			'password'=>'',
+			'username'=>'cash',
+			//'password'=>'cash',
 			'charset'=>'utf8',
+			'password'=>'Fm4tSuFRprdX6DY4',
 		),
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors

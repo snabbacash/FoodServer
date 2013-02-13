@@ -38,14 +38,25 @@ class OrderController extends Controller
 
 		foreach ($orders as $order)
 		{
-			// TODO: Make a toJson() method somewhere (perhaps a base model)
-			$jsonData[] = array(
-				'id'=>$order->id,
-				'created'=>$order->created,
-				'user'=>$order->user,
-				'transaction'=>$order->transaction,
-				'status'=>$order->status,
-			);
+			$jsonData[] = $this->getOrderArray($order);
+		}
+
+		$this->sendResponse($jsonData);
+	}
+	/**
+	 * Returns all orders for the specified status
+	 * @param string $status
+	 */
+	public function actionListStatus($status)
+	{
+
+		// Find the orders and return them
+		$orders = Order::model()->findAll('status = :status', array(':status'=>$status));
+		$jsonData = array();
+
+		foreach ($orders as $order)
+		{
+			$jsonData[] = $this->getOrderArray($order);
 		}
 
 		$this->sendResponse($jsonData);
@@ -53,15 +64,10 @@ class OrderController extends Controller
 
 	/**
 	 * Display a specific order.
-	 *
-	 * @param string $date date specified as YYYY-MM-DD, defaulting to todays date.
 	 */
 	public function actionView($id)
 	{
-		$this->sendResponse((object) array(
-			'id' => $id
-		));
-		$this->sendResponse(404);
+        $this->sendResponse((object) $this->getOrderArray($this->getOrder($id)));
 	}
 
 	/**
@@ -69,29 +75,119 @@ class OrderController extends Controller
 	 */
 	public function actionCreate()
 	{
-		if (isset($_POST['items'])) {
-			$id = rand();
-			$this->setHeader('Location', "/orders/$id");
-			$this->sendResponse(201, array(
-				'id' => $id
-			));
-		}
-		// Missing field
-		$this->sendResponse(400);
+		$user = User::model()->findByToken($this->token);
+        $order = new Order();
+        $order->setAttribute("user",$user->getAttribute("id"));
+        $this->validate('orders.create', $this->decodedJsonData);
+        if (!$order->save())
+            throw new CHttpException(500, 'Unable to create order');
+        $orderItems = array();
+        foreach($this->decodedJsonData->items as $item){
+            $orderItem = new OrderItem();
+            $orderItem->setAttributes(array(
+                "product"=>$item->id,
+                "amount"=>$item->amount,
+                "order"=>$order->getAttribute("id")
+            ));
+            if (!$orderItem->save())
+                throw new CHttpException(500, 'Unable to create orderItem');
+            $orderItems[] = $this->getOrderItemArray($orderItem);
+        }
+        
+        $this->sendResponse($this->getOrderArray($order));
+		// Find the user, we need his role
+		// TODO: Add Controller::loadUser()
 	}
 
 	/**
 	 * Update an order
+	 * @param integer $id
 	 */
 	public function actionUpdate($id)
 	{
-		$data = $this->getPutData();
-		// Forbidden
-		if (isset($data['id']))
-			$this->sendResponse(403);
-
-		$this->sendResponse((object) array(
-			'id' => $id
-		));
+        $order = $this->getOrder($id);
+		$this->validate('orders.update', $this->decodedJsonData);
+        if($order->status == 'confirmed'){
+            if(isset($this->decodedJsonData->items)){
+                throw new CHttpException(400, "Cant't change items, Order $id already confirmed");
+            }
+        }else{
+            foreach($order->orderItems as $orderItem){
+                $exists = false;
+                foreach($this->decodedJsonData->items as $key => $newOrderItem){
+                    if($orderItem->product == $newOrderItem->product){
+                        $orderItem->setAttribute("amount", $newOrderItem->amount);
+                        unset($this->decodedJsonData->items[$key]);
+                        $exists = true;
+                        break;
+                    }
+                }
+                if(!$exists){
+                    $orderItem->delete();
+                }
+            }
+            foreach($this->decodedJsonData->items as $item){
+                $orderItem = new OrderItem();
+                $orderItem->setAttribute("order", $id);
+                $orderItem->setAttribute("product", $item->product);
+                $orderItem->setAttribute("amount", $item->amount);
+                if (!$orderItem->save())
+                    throw new CHttpException(500, 'Unable to save orderItem');
+            }
+        }
+		$this->sendResponse((object) $this->getOrderArray($order));
 	}
+	/**
+	 * Get order by ID
+	 * @param integer $id
+	 */
+    public function getOrder($id){
+		$order = Order::model()->findByPk($id);
+		if($order){
+            return $order;
+        }else{
+            throw new CHttpException(404, "Order $id not found");
+        }
+    }
+	/**
+	 * Get array from order
+	 * @param Order $order
+	 */
+    public function getOrderArray(Order $order){
+        $orderItems = array();
+        foreach($order->orderItems as $orderItem){
+            $orderItems[] = $this->getOrderItemArray($orderItem);
+        }
+        return array(
+            'id'=>$order->id,
+            'created'=>$order->created,
+            'user'=>$order->user,
+            'transaction'=>$order->transaction,
+            'status'=>$order->status,
+            'items' => $orderItems
+        );
+    }
+	/**
+	 * Get orderItem by ID
+	 * @param integer $id
+	 */
+    public function getOrderItem($id){
+		$order = OrderItem::model()->findByPk($id);
+		if($order){
+            return $order;
+        }else{
+            throw new CHttpException(404, "OrderItem $id not found");
+        }
+    }
+	/**
+	 * Get array from orderItem
+	 * @param OrderItem $orderItem
+	 */
+    public function getOrderItemArray(OrderItem $orderItem){
+        return array(
+                //'id' => $orderItem->getPrimaryKey(),
+                'product' => $orderItem->getAttribute("product"),
+                'amount' => $orderItem->getAttribute("amount"),
+            );
+    }
 }
