@@ -102,5 +102,15 @@ class User extends CActiveRecord
 
 		return self::model()->with($with)->find();
 	}
+
+	public function __toJSON()
+	{
+		return array(
+			'username'=>$this->username,
+			'name'=>$this->name,
+			'balance'=>(double) $this->balance,
+			'role'=>$this->role->name
+		);
+	}
 	
 }

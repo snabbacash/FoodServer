@@ -71,19 +71,21 @@ class FoodPrice extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
-
 		$criteria->compare('food',$this->food,true);
-
 		$criteria->compare('userrole',$this->userrole,true);
-
 		$criteria->compare('price',$this->price,true);
 
 		return new CActiveDataProvider('FoodPrice', array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	public function __toJSON()
+	{
+		return array(
+			'role'=>$this->userrole,
+			'price'=>$this->price
+		);
 	}
 }
