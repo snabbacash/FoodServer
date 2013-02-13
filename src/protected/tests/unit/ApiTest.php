@@ -31,7 +31,7 @@ abstract class ApiTest extends PHPUnit_Framework_TestCase
 	 * @param array $options
 	 * @return array
 	 */
-	public function post($url, array $params, array $options = null)
+	public function post($url, $params, array $options = null)
 	{
 		$options[CURLOPT_POST] = 1;
 		$options[CURLOPT_POSTFIELDS] = $params;
@@ -82,7 +82,7 @@ abstract class ApiTest extends PHPUnit_Framework_TestCase
 			CURLOPT_HEADER => 1,
 		);
 
-		if (isset($options[CURLOPT_POSTFIELDS])) {
+		if (isset($options[CURLOPT_POSTFIELDS]) && is_array($options[CURLOPT_POSTFIELDS])) {
 			$options[CURLOPT_POSTFIELDS] = $this->_encode($options[CURLOPT_POSTFIELDS]);
 		}
 
@@ -119,5 +119,23 @@ abstract class ApiTest extends PHPUnit_Framework_TestCase
 	protected function _encode(array $params)
 	{
 		return http_build_query($params, null, '&');
+	}
+
+	protected function getToken()
+	{
+		$result = $this->post('/login', json_encode((object) array(
+			'user'=>TEST_USER,
+			'pass'=>TEST_PASSWORD,
+		)));
+		$response = json_decode($result['body']);
+		return $response->token;
+	}
+
+	protected function setUp()
+	{
+		$this->auth = array(
+			CURLOPT_HTTPAUTH=>CURLAUTH_BASIC,
+			CURLOPT_USERPWD=>'api_token:'.$this->getToken(),
+		);
 	}
 }
