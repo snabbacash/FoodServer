@@ -23,12 +23,8 @@ class MenuController extends Controller
 	 */
 	public function actionList($week)
 	{
-		if ($week >= 1 && $week <= 52) {
-			$this->sendResponse(array(
-				'week' => $week
-			));
-		}
-		$this->sendResponse(404);
+		$menus = Menu::findByWeek($week);
+		$this->sendResponse($menus);
 	}
 
 	/**
@@ -45,23 +41,8 @@ class MenuController extends Controller
 		// TODO: Add Controller::loadUser()
 		$user = User::model()->findByToken($this->token);
 
-		$menu = array();
-		$meals = Food::model()->findAllByAttributes(array('date'=>$date));
-
-		foreach ($meals as $meal)
-		{
-			$menuItem = new StdClass();
-			$menuItem->id = $meal->id;
-			$menuItem->parts = array();
-			$menuItem->price = $meal->getPrice($user->role_id);
-
-			foreach ($meal->foodParts as $foodPart)
-				$menuItem->parts[] = $foodPart->name;
-			
-			$menu[] = $menuItem;
-		}
+		$menu = Menu::findByDate($date);
 
 		$this->sendResponse($menu);
 	}
-	
 }

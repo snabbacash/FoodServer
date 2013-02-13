@@ -82,13 +82,36 @@ class Food extends CActiveRecord
 	 * @return mixed the food price as a double or null if the price could not 
 	 * be determined
 	 */
-	public function getPrice($roleId)
-	{
-		$foodPrice = FoodPrice::model()->findByAttributes(array(
-			'food'=>$this->id, 'userrole'=>$roleId));
+		public function getPrice($roleId)
+		{
+			$foodPrice = FoodPrice::model()->findByAttributes(array(
+				'food'=>$this->id, 'userrole'=>$roleId));
 
-		if ($foodPrice !== null)
-			return $foodPrice->price;
+			if ($foodPrice !== null)
+				return $foodPrice->price;
+		}
+
+	public function __toJSON()
+	{
+		$foodPrices = FoodPrice::model()->findAllByAttributes(array(
+			'food'=>$this->id));
+
+		// Change the price objects into an associative array keyed per rolename.
+		foreach ($foodPrices as $foodPrice)
+		{
+			foreach ($this->userRoles as $role)
+				if ($role->id === $foodPrice->userrole)
+					$roleName = $role->name;
+
+			$price[$roleName] = $foodPrice->price;
+		}
+
+		return array(
+			'date'=>$this->date,
+			'id'=>$this->id,
+			'parts'=>$this->foodParts,
+			'price'=>$price,
+		);
 	}
-	
+
 }
