@@ -6,8 +6,8 @@
  * procected/config/main.php which should contain a subset of what is defined 
  * here. Example:
  * 
- * // use proper database credentials
- * return array(
+ // use proper database credentials
+ return array(
 	'components'=>array(
 		'db'=>array(
 			'username'=>'root',
@@ -18,8 +18,7 @@
 			'ldapSearchBase' => 'ou=others,dc=example,dc=org',
 		),
 	)
-);
- * 
+); 
  */
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
@@ -76,10 +75,9 @@ return array(
 		'db'=>array(
 			'connectionString'=>'mysql:host=localhost;port=3306;dbname=cash',
 			'emulatePrepare'=>true,
-			'username'=>'cash',
-			//'password'=>'cash',
 			'charset'=>'utf8',
-			'password'=>'Fm4tSuFRprdX6DY4',
+			'username'=>'',
+			'password'=>'',
 		),
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors

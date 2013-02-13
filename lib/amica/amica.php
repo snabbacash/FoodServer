@@ -43,13 +43,6 @@ class AmicaParser{
 	}
 
 
-	function __toCents($float){
-		$parts = explode(",", $float);
-		$cents = 0;
-		$cents += $parts[0]*100;
-		$cents += $parts[1];
-		return $cents;
-	}
 	function __parse($lang){
 		$html =  str_get_html(file_get_contents($this->arcadaUrls[$lang]));
 		$ruokaLista = trim($html->find('body .ContentArea', 2)->innertext);
@@ -114,9 +107,9 @@ class AmicaParser{
 						} else {
 							$prices = preg_split('/(\d{1,2},\d{2})/', trim($part," ()"), 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 							$line[$i]['price']= array(
-								'student'	=> $this->__toCents($prices[0]),
-								'other'		=> $this->__toCents($prices[1]),
-								'staff'		=> $this->__toCents($prices[2]),
+								'student'  => str_replace(',', '.', $prices[0]),
+								'other'    => str_replace(',', '.', $prices[1]),
+								'staff'    => str_replace(',', '.', $prices[2]),
 							);
 							
 						}
