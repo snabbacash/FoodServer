@@ -31,7 +31,7 @@ class JSON extends CJSON {
 			case 'object':
 				// Check for serializable objects.
 				if ($var instanceof ApiSerializable)
-					return self::encode($var->__toJSON());
+					return self::encode($var->serialize());
 
 				elseif ($var instanceof Traversable)
 				{

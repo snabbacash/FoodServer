@@ -94,7 +94,7 @@ class Food extends CActiveRecord implements ApiSerializable
 	/**
 	 * @return array a serialized version of Food to be usd by the API.
 	 */
-	public function __toJSON()
+	public function serialize()
 	{
 		$foodPrices = FoodPrice::model()->findAllByAttributes(array(
 			'food'=>$this->id));

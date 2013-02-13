@@ -84,7 +84,7 @@ class FoodPrice extends CActiveRecord implements ApiSerializable
 	/**
 	 * @return array a serialized version of the FoodPrice to be usd by the API.
 	 */
-	public function __toJSON()
+	public function serialize()
 	{
 		return array(
 			'role'=>$this->userrole,

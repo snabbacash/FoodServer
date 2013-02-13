@@ -106,7 +106,7 @@ class User extends CActiveRecord implements ApiSerializable
 	/**
 	 * @return array a serialized version of the User to be usd by the API.
 	 */
-	public function __toJSON()
+	public function serialize()
 	{
 		return array(
 			'username'=>$this->username,
