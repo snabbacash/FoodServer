@@ -7,7 +7,7 @@
  * @property string $id
  * @property string $date
  */
-class Food extends CActiveRecord
+class Food extends CActiveRecord implements ApiSerializable
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -91,6 +91,9 @@ class Food extends CActiveRecord
 				return $foodPrice->price;
 		}
 
+	/**
+	 * @return array a serialized version of Food to be usd by the API.
+	 */
 	public function __toJSON()
 	{
 		$foodPrices = FoodPrice::model()->findAllByAttributes(array(

@@ -13,7 +13,7 @@
  * @property UserRole $role
  * @property UserToken $token
  */
-class User extends CActiveRecord
+class User extends CActiveRecord implements ApiSerializable
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -103,6 +103,9 @@ class User extends CActiveRecord
 		return self::model()->with($with)->find();
 	}
 
+	/**
+	 * @return array a serialized version of the User to be usd by the API.
+	 */
 	public function __toJSON()
 	{
 		return array(

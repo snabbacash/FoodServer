@@ -8,7 +8,7 @@
  * @property string $userrole
  * @property string $price
  */
-class FoodPrice extends CActiveRecord
+class FoodPrice extends CActiveRecord implements ApiSerializable
 {
 	/**
 	 * Returns the static model of the specified AR class.
@@ -81,6 +81,9 @@ class FoodPrice extends CActiveRecord
 		));
 	}
 
+	/**
+	 * @return array a serialized version of the FoodPrice to be usd by the API.
+	 */
 	public function __toJSON()
 	{
 		return array(
