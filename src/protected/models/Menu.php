@@ -1,7 +1,14 @@
 <?php
 
+/**
+ * A Menu model for outputing sets of food items bundled together.
+ */
 class Menu extends CModel
 {
+	/**
+	 * @param string the specified as Y-m-d
+	 * @return object menu structure.
+	 */
 	public static function findByDate($date)
 	{
 		$meals = Food::model()->findAllByAttributes(array('date'=>$date));
@@ -14,6 +21,9 @@ class Menu extends CModel
 		return $menu;
 	}
 
+	/**
+	 * @param int the week number according to ISO-8601.
+	 */
 	public function findByWeek($week)
 	{
 		// @TODO errr how to group these by date?
@@ -22,6 +32,9 @@ class Menu extends CModel
 
 	}
 
+	/**
+	 * @todo im not really grasping the potential of this. // oxy
+	 */
 	public function attributeNames()
 	{
 		return array('date', 'menu');

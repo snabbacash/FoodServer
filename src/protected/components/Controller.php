@@ -179,6 +179,12 @@ class Controller extends CController
 		$this->renderJson($body);
 	}
 
+	/**
+	 * Retrieve schema definition.
+	 * @param string filename of schema without extension.
+	 * @return object JSON decoded contents of schema.
+	 * @throws CHttpException
+	 */
 	public function getSchema($schema)
 	{
 		$path = __DIR__ . "/../schemas/$schema.json";
@@ -188,6 +194,12 @@ class Controller extends CController
 			throw new CHttpException(500, 'Internal error');
 	}
 
+	/**
+	 * @param string filename of schema without extension.
+	 * @param mixed request array.
+	 * @return boolean true on success.
+	 * @throws CHttpException
+	 */
 	public function validate($schema, $request)
 	{
 		$validator = new JsonSchema\Validator();
