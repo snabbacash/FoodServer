@@ -90,7 +90,7 @@ class Order extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	* Calculates the total price of current Order
 	* @return total price for order
@@ -105,7 +105,6 @@ class Order extends CActiveRecord
 				'userrole'=>$user->role_id 
 			));
 			$totalsum += $price->price * $item->amount;
-
 		}
 
 		return $totalsum;

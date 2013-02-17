@@ -93,9 +93,14 @@ class OrderController extends Controller
                 throw new CHttpException(500, 'Unable to create orderItem');
             $orderItems[] = $this->getOrderItemArray($orderItem);
         }
-        
-        $this->sendResponse($this->getOrderArray($order));
-		// Find the user, we need his role
+        // TODO: Loop over users open orders and see if the funds are enough
+        if ($user->balance >= $order->price() ){
+        	$this->sendResponse($this->getOrderArray($order));
+		} else {
+			// 402 Payment Required
+            throw new CHttpException(402, 'Cheap Bastard, you need more funds');
+		}
+        // Find the user, we need his role
 		// TODO: Add Controller::loadUser()
 	}
 
