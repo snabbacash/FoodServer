@@ -12,7 +12,7 @@
 		'db'=>array(
 			'username'=>'root',
 			'password'=>'password',
-		)
+		),
 		'authProvider'=>array(
 			'ldapUrl' => 'ldaps://ldap.example.org',
 			'ldapSearchBase' => 'ou=others,dc=example,dc=org',

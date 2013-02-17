@@ -90,4 +90,25 @@ class Order extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+	
+	/**
+	* Calculates the total price of current Order
+	* @return total price for order
+	*/
+	public function price(){
+		$user =  User::model()->findByAttributes(array('id'=>$this->user));
+		$totalsum = 0.0;
+		
+		foreach ($this->orderItems as $item) {
+			$price = FoodPrice::model()->findByAttributes(array(
+				'food' => $item->product, 
+				'userrole'=>$user->role_id 
+			));
+			$totalsum += $price->price * $item->amount;
+
+		}
+
+		return $totalsum;
+	}
+
 }
