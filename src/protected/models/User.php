@@ -115,5 +115,20 @@ class User extends CActiveRecord implements ApiSerializable
 			'role'=>$this->role->name
 		);
 	}
+	/**
+	* Calculates pending payments for User
+	* @return sum of paymnents not confirmed yet
+	*/
+	public function reservedPayment(){
+		$openOrders = Order::model()->findAllByAttributes(array(
+        	'user'=>$this->id,
+        	'transaction' => null,
+        ));
+        $totalPendingSum = 0.0;
+        foreach ($openOrders as $oOrder) {
+        	$totalPendingSum += $oOrder->price();
+        }
+        return $totalPendingSum;
+	}
 	
 }

@@ -104,7 +104,7 @@ class Order extends CActiveRecord
 				'food' => $item->product, 
 				'userrole'=>$user->role_id 
 			));
-			$totalsum += $price->price * $item->amount;
+			$totalsum += ($price->price * $item->amount);
 		}
 
 		return $totalsum;

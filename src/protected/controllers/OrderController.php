@@ -75,6 +75,8 @@ class OrderController extends Controller
 	 */
 	public function actionCreate()
 	{
+		// TODO: Delete failed attempt of creating order
+
 		$user = User::model()->findByToken($this->token);
         $order = new Order();
         $order->setAttribute("user",$user->getAttribute("id"));
@@ -89,15 +91,22 @@ class OrderController extends Controller
                 "amount"=>$item->amount,
                 "order"=>$order->getAttribute("id")
             ));
-            if (!$orderItem->save())
-                throw new CHttpException(500, 'Unable to create orderItem');
+            if (!$orderItem->save()) {
+            	OrderItem::model()->deleteAllByAttributes(array('order'=>$order->id));
+            	$order->delete();
+
+            	throw new CHttpException(500, 'Unable to create orderItem');
+            }
             $orderItems[] = $this->getOrderItemArray($orderItem);
         }
-        // TODO: Loop over users open orders and see if the funds are enough
-        if ($user->balance >= $order->price() ){
+        
+        if ($user->balance >= $user->reservedPayment() ){
         	$this->sendResponse($this->getOrderArray($order));
 		} else {
-			// 402 Payment Required
+        	OrderItem::model()->deleteAllByAttributes(array('order'=>$order->id));
+        	$order->delete();
+
+			// 402 Payment Required, Or something else
             throw new CHttpException(402, 'Cheap Bastard, you need more funds');
 		}
         // Find the user, we need his role
@@ -140,6 +149,7 @@ class OrderController extends Controller
                     throw new CHttpException(500, 'Unable to save orderItem');
             }
         }
+        // TODO: Add fund checks
 		$this->sendResponse((object) $this->getOrderArray($order));
 	}
 	/**
