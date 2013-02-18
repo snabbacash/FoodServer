@@ -75,8 +75,6 @@ class OrderController extends Controller
 	 */
 	public function actionCreate()
 	{
-		// TODO: Delete failed attempt of creating order
-
 		$user = User::model()->findByToken($this->token);
         $order = new Order();
         $order->setAttribute("user",$user->getAttribute("id"));
