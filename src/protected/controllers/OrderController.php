@@ -75,6 +75,8 @@ class OrderController extends Controller
 	 */
 	public function actionCreate()
 	{
+		// TODO: Delete failed attempt of creating order
+
 		$user = User::model()->findByToken($this->token);
         $order = new Order();
         $order->setAttribute("user",$user->getAttribute("id"));
@@ -142,7 +144,7 @@ class OrderController extends Controller
     public function processOrder(Order $order){
 		$user = User::model()->findByToken($this->token);
         if(isset($this->decodedJsonData->confirmed)){
-            if($user->role->name == "staff"){
+            if($user->role->name == "amica"){
                 if($this->decodedJsonData->confirmed){
                     $order->pay();
                 }else{
