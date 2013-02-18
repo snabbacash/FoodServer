@@ -117,7 +117,7 @@ class AmicaParser{
 				}
 				unset($arr[$day]);
 
-				$arr[date("Y-n-j", strtotime('Last Monday +'.array_search($day, $days).'days'))] = $line;
+				$arr[date("Y-n-j", strtotime('this week +'.array_search($day, $days).'days'))] = $line;
 		}
 		return $arr;
 
