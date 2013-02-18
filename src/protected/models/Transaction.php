@@ -34,7 +34,7 @@ class Transaction extends CActiveRecord
 	{
 		return array(
 			array('timestamp, amount', 'required'),
-			array('amount', 'numerical', 'integerOnly'=>true),
+			array('amount', 'numerical', 'integerOnly'=>false),
 			// The following rule is used by search().
 			array('id, timestamp, amount', 'safe', 'on'=>'search'),
 		);

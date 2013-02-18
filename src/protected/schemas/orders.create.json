@@ -8,7 +8,7 @@
 				"type": "object",
 				"properties": {
 					"id" : { "type": "integer", "required": true },
-					"amount" : { "type": "integer", "required": true }
+					"amount" : { "type": "decimal", "required": true }
 				},
 				"additionalProperties": false
 			},

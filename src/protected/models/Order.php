@@ -109,5 +109,41 @@ class Order extends CActiveRecord
 
 		return $totalsum;
 	}
+    
+    public function pay(){
+		$user =  User::model()->findByAttributes(array('id'=>$this->user));
+        $price = $this->price();
+        if(!isset($this->transaction) && $user->balance >= $price){
+            $transaction = new Transaction();
+            $transaction->setAttribute("amount", -$price);
+            $transaction->setAttribute("timestamp", time());
+            if (!$transaction->save())
+                throw new CHttpException(500, "Unable to save transaction".print_r($transaction->getErrors(),true));
+            $user->setAttribute("balance", $user->balance-$price);
+            if (!$user->save()){
+                $transaction->delete();
+                throw new CHttpException(500, "Unable to save user");
+            }
+            $this->setAttribute("status","payed");
+            $this->setAttribute("transaction", $transaction->getPrimaryKey());
+            $this->save();
+        }
+    }
+    public function refund(){
+       
+        if(isset($this->transaction)){
+            $user =  User::model()->findByAttributes(array('id'=>$this->user));
+            $transaction = Transaction::model()->findByPk($this->transaction);
+            //det blir minus för transaction som "Kostar" är -. -+- = +
+            $user->setAttribute("balance", $user->balance-$transaction->amount);
+            if (!$user->save()){
+                throw new CHttpException(500, "Unable to save user");
+            }
+            $this->setAttribute("transaction", null);
+            $this->setAttribute("status","refunded");
+            $this->save();
+            $transaction->delete();
+        }
+    }
 
 }

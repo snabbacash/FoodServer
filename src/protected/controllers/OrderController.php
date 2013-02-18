@@ -99,18 +99,7 @@ class OrderController extends Controller
             }
             $orderItems[] = $this->getOrderItemArray($orderItem);
         }
-        
-        if ($user->balance >= $user->reservedPayment() ){
-        	$this->sendResponse($this->getOrderArray($order));
-		} else {
-        	OrderItem::model()->deleteAllByAttributes(array('order'=>$order->id));
-        	$order->delete();
-
-			// 402 Payment Required, Or something else
-            throw new CHttpException(402, 'Cheap Bastard, you need more funds');
-		}
-        // Find the user, we need his role
-		// TODO: Add Controller::loadUser()
+        $this->processOrder($order);
 	}
 
 	/**
@@ -121,37 +110,63 @@ class OrderController extends Controller
 	{
         $order = $this->getOrder($id);
 		$this->validate('orders.update', $this->decodedJsonData);
-        if($order->status == 'confirmed'){
-            if(isset($this->decodedJsonData->items)){
-                throw new CHttpException(400, "Cant't change items, Order $id already confirmed");
-            }
+        $order->setAttribute("status", $this->decodedJsonData->status);
+        if($order->status == 'confirmed' && isset($this->decodedJsonData->items)){
+            throw new CHttpException(400, "Cant't change items, Order $id already confirmed");
         }else{
-            foreach($order->orderItems as $orderItem){
-                $exists = false;
-                foreach($this->decodedJsonData->items as $key => $newOrderItem){
-                    if($orderItem->product == $newOrderItem->product){
-                        $orderItem->setAttribute("amount", $newOrderItem->amount);
-                        unset($this->decodedJsonData->items[$key]);
-                        $exists = true;
-                        break;
+            if(isset($this->decodedJsonData->items)){
+                foreach($order->orderItems as $orderItem){
+                    $exists = false;
+                    foreach($this->decodedJsonData->items as $key => $newOrderItem){
+                        if($orderItem->product == $newOrderItem->product){
+                            $orderItem->setAttribute("amount", $newOrderItem->amount);
+                            unset($this->decodedJsonData->items[$key]);
+                            $exists = true;
+                            break;
+                        }
+                    }
+                    if(!$exists){
+                        $orderItem->delete();
                     }
                 }
-                if(!$exists){
-                    $orderItem->delete();
+                foreach($this->decodedJsonData->items as $item){
+                    $orderItem = new OrderItem();
+                    $orderItem->setAttribute("order", $id);
+                    $orderItem->setAttribute("product", $item->product);
+                    $orderItem->setAttribute("amount", $item->amount);
+                    if (!$orderItem->save())
+                        throw new CHttpException(500, 'Unable to save orderItem');
                 }
             }
-            foreach($this->decodedJsonData->items as $item){
-                $orderItem = new OrderItem();
-                $orderItem->setAttribute("order", $id);
-                $orderItem->setAttribute("product", $item->product);
-                $orderItem->setAttribute("amount", $item->amount);
-                if (!$orderItem->save())
-                    throw new CHttpException(500, 'Unable to save orderItem');
+        }
+        $this->processOrder($order);
+	}
+    public function processOrder(Order $order){
+		$user = User::model()->findByToken($this->token);
+        if(isset($this->decodedJsonData->confirmed)){
+            if($user->role->name == "staff"){
+                if($this->decodedJsonData->confirmed){
+                    $order->pay();
+                }else{
+                    $order->refund();
+                }
+                $this->sendResponse($this->getOrderArray($order));
+            }else{
+                throw new CHttpException(403, 'You need to be staff');
+            }
+        }else {
+            //@TODO fixa ACL så att users int kan editera andras orders.
+            if ($user->balance >= $user->reservedPayment() ){
+                $this->sendResponse($this->getOrderArray($order));
+            } else {
+                OrderItem::model()->deleteAllByAttributes(array('order'=>$order->id));
+                $order->delete();
+
+                // 402 Payment Required, Or something else
+                throw new CHttpException(402, 'Cheap Bastard, you need more funds');
             }
         }
-        // TODO: Add fund checks
-		$this->sendResponse((object) $this->getOrderArray($order));
-	}
+    }
 	/**
 	 * Get order by ID
 	 * @param integer $id
