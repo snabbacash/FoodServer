@@ -1,13 +1,25 @@
 <?php
 
 /**
- * Description of RestrictHttpMethodsFilter
+ * This controller filter checks that incoming requests are done with the 
+ * correct methods. It also interprets the OPTIONS request which is done by 
+ * AJAX clients when the client resides on another domain than the server. The 
+ * server must respond to these requests with special access control headers 
+ * before the client will send the actual request.
  *
- * @author sam
+ * @author Sam Stenvall <sam.stenvall@arcada.fi>
  */
 class RestrictHttpMethodsFilter extends CFilter
 {
 
+	/**
+	 * The value of the Access-Control-Max-Age which is sent to a client 
+	 * performing an AJAX request from another domain than the server. This 
+	 * should be changed to something larger (like 1 month) once this whole 
+	 * thing is live.
+	 */
+	const CORS_REQUEST_MAX_AGE = 86400;
+	
 	/**
 	 * @var mixed a string or array of valid request types (e.g. PUT, POST, GET)
 	 */
@@ -21,6 +33,10 @@ class RestrictHttpMethodsFilter extends CFilter
 		if (is_string($this->methods))
 			$this->methods = array($this->methods);
 
+		// OPTIONS is always a valid method, it is needed to make CORS requests
+		if (!in_array('OPTIONS', $this->methods))
+			$this->methods[] = 'OPTIONS';
+		
 		parent::init();
 	}
 
@@ -33,6 +49,17 @@ class RestrictHttpMethodsFilter extends CFilter
 	{
 		$requestType = Yii::app()->request->requestType;
 
+		// Respond to OPTIONS requests with Access-Control headers
+		if ($requestType == 'OPTIONS')
+		{
+			$allowedMethods = implode(', ', $this->methods);
+
+			header('Access-Control-Allow-Origin: ' . Yii::app()->params['serverUrl']);
+			header('Access-Control-Allow-Methods: ' . $allowedMethods);
+			header('Access-Control-Max-Age: ' . self::CORS_REQUEST_MAX_AGE);
+			Yii::app()->end();
+		}
+		
 		if (in_array($requestType, $this->methods))
 			return true;
 
