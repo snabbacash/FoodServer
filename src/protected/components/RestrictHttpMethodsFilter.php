@@ -53,7 +53,6 @@ class RestrictHttpMethodsFilter extends CFilter
 		// Respond to OPTIONS requests with Access-Control headers
 		if ($requestMethod == 'OPTIONS')
 		{
-			$allowedOrigins = implode(', ', Yii::app()->params['clientUrls']);
 			$allowedHeaders = array();
 
 			// Always allow the headers the client requested
@@ -62,8 +61,16 @@ class RestrictHttpMethodsFilter extends CFilter
 				$allowedHeaders = explode(',', $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
 				$allowedHeaders = array_map('trim', $allowedHeaders);
 			}
+			
+			// Set allowed origin to whatever origin the request came from 
+			// since the header can only take one value. If the origin can't be 
+			// determined we use a wild-card.
+			if (array_key_exists('HTTP_ORIGIN', $_SERVER))
+				$allowedOrigin = $_SERVER['HTTP_ORIGIN'];
+			else
+				$allowedOrigin = '*';
 
-			header('Access-Control-Allow-Origin: '.$allowedOrigins);
+			header('Access-Control-Allow-Origin: '.$allowedOrigin);
 			header('Access-Control-Allow-Methods: '.$allowedMethods);
 			header('Access-Control-Max-Age: '.self::CORS_REQUEST_MAX_AGE);
 			header('Access-Control-Allow-Headers: '.implode(', ', $allowedHeaders));
