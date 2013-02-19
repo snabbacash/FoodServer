@@ -48,17 +48,20 @@ class RestrictHttpMethodsFilter extends CFilter
 	protected function preFilter($filterChain)
 	{
 		$requestMethod = Yii::app()->request->requestType;
+		$allowedMethods = implode(', ', $this->methods);
 
 		// Respond to OPTIONS requests with Access-Control headers
 		if ($requestMethod == 'OPTIONS')
 		{
 			$allowedOrigins = implode(', ', Yii::app()->params['clientUrls']);
-			$allowedMethods = implode(', ', $this->methods);
 			$allowedHeaders = array();
 
 			// Always allow the headers the client requested
 			if (array_key_exists('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', $_SERVER))
-				$allowedHeaders = $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'];
+			{
+				$allowedHeaders = explode(',', $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+				$allowedHeaders = array_map('trim', $allowedHeaders);
+			}
 
 			header('Access-Control-Allow-Origin: '.$allowedOrigins);
 			header('Access-Control-Allow-Methods: '.$allowedMethods);
