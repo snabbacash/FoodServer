@@ -21,7 +21,7 @@ class RestrictHttpMethodsFilter extends CFilter
 	const CORS_REQUEST_MAX_AGE = 86400;
 	
 	/**
-	 * @var mixed a string or array of valid request types (e.g. PUT, POST, GET)
+	 * @var mixed a string or array of valid request methods (e.g. PUT, POST, GET)
 	 */
 	public $methods;
 
@@ -41,16 +41,16 @@ class RestrictHttpMethodsFilter extends CFilter
 	}
 
 	/**
-	 * Checks the current request's type to see if it is allowed
+	 * Checks the current request's method to see if it is allowed
 	 * @param CFilterChain $filterChain the filter chain
-	 * @throws CHttpException if the request type is invalid
+	 * @throws CHttpException if the request method is invalid
 	 */
 	protected function preFilter($filterChain)
 	{
-		$requestType = Yii::app()->request->requestType;
+		$requestMethod = Yii::app()->request->requestType;
 
 		// Respond to OPTIONS requests with Access-Control headers
-		if ($requestType == 'OPTIONS')
+		if ($requestMethod == 'OPTIONS')
 		{
 			$allowedOrigins = implode(', ', Yii::app()->params['clientUrls']);
 			$allowedMethods = implode(', ', $this->methods);
@@ -68,10 +68,10 @@ class RestrictHttpMethodsFilter extends CFilter
 			Yii::app()->end();
 		}
 		
-		if (in_array($requestType, $this->methods))
+		if (in_array($requestMethod, $this->methods))
 			return true;
 
-		throw new CHttpException(400, 'Invalid request type');
+		throw new CHttpException(400, 'Invalid request method. Valid request methods are '.$allowedMethods);
 	}
 
 }
