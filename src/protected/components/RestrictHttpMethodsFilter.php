@@ -52,11 +52,19 @@ class RestrictHttpMethodsFilter extends CFilter
 		// Respond to OPTIONS requests with Access-Control headers
 		if ($requestType == 'OPTIONS')
 		{
+			$allowedOrigins = implode(', ', Yii::app()->params['clientUrls']);
 			$allowedMethods = implode(', ', $this->methods);
+			$allowedHeaders = array();
 
-			header('Access-Control-Allow-Origin: ' . Yii::app()->params['serverUrl']);
-			header('Access-Control-Allow-Methods: ' . $allowedMethods);
-			header('Access-Control-Max-Age: ' . self::CORS_REQUEST_MAX_AGE);
+			// Always allow the headers the client requested
+			if (array_key_exists('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', $_SERVER))
+				$allowedHeaders = $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'];
+
+			header('Access-Control-Allow-Origin: '.$allowedOrigins);
+			header('Access-Control-Allow-Methods: '.$allowedMethods);
+			header('Access-Control-Max-Age: '.self::CORS_REQUEST_MAX_AGE);
+			header('Access-Control-Allow-Headers: '.implode(', ', $allowedHeaders));
+			header('Access-Control-Allow-Credentials: true');
 			Yii::app()->end();
 		}
 		

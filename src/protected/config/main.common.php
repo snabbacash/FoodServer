@@ -103,7 +103,10 @@ return array(
 		// username used for in combination with the API token
 		'httpUsername'=>'api_token',
 		
-		// the server URL, including schema, no ending slash
-		'serverUrl'=>'http://snabbacash.fik1.net',
+		// list of client hosts. This is needed for AJAX to work properly.
+		'clientUrls'=>array(
+			'http://werket.tlk.fi',
+			'https://werket.tlk.fi',
+		),
 	),
 );
