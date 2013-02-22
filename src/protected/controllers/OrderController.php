@@ -43,6 +43,19 @@ class OrderController extends Controller
 
 		$this->sendResponse($jsonData);
 	}
+    public function actionListUser($username)
+    {
+        $user = User::model()->findByAttributes(array('username'=>$username));
+        $orders = Order::model()->findAllByAttributes(array("user"=>$user->id));
+        
+        $jsonData = array();
+        foreach ($orders as $order)
+        {
+            $jsonData[] = $this->getOrderArray($order);
+        }
+
+        $this->sendResponse($jsonData);
+    }
 	/**
 	 * Returns all orders for the specified status
 	 * @param string $status
@@ -50,8 +63,13 @@ class OrderController extends Controller
 	public function actionListStatus($status)
 	{
 
+        if ($status == "pending"){
+            $orders = Order::model()->findAllByAttributes(array("status"=>array("new","refunded")));
+        } else {
+            $orders = Order::model()->findAllByAttributes(array("status"=>$status));
+        }
 		// Find the orders and return them
-		$orders = Order::model()->findAll('status = :status', array(':status'=>$status));
+		//$orders = Order::model()->findAll('status = :status', array(':status'=>$status));
 		$jsonData = array();
 
 		foreach ($orders as $order)
@@ -111,8 +129,9 @@ class OrderController extends Controller
         $order = $this->getOrder($id);
 		$this->validate('orders.update', $this->decodedJsonData);
         $order->setAttribute("status", $this->decodedJsonData->status);
-        if($order->status == 'confirmed' && isset($this->decodedJsonData->items)){
-            throw new CHttpException(400, "Cant't change items, Order $id already confirmed");
+        
+        if(!is_null($order->transaction) && isset($this->decodedJsonData->items)){
+            throw new CHttpException(400, "Cant't change items, Order $id already paid");
         }else{
             if(isset($this->decodedJsonData->items)){
                 foreach($order->orderItems as $orderItem){
@@ -152,7 +171,7 @@ class OrderController extends Controller
                 }
                 $this->sendResponse($this->getOrderArray($order));
             }else{
-                throw new CHttpException(403, 'You need to be staff');
+                throw new CHttpException(403, 'You need to be amica');
             }
         }else {
             //@TODO fixa ACL så att users int kan editera andras orders.
@@ -161,9 +180,8 @@ class OrderController extends Controller
             } else {
                 OrderItem::model()->deleteAllByAttributes(array('order'=>$order->id));
                 $order->delete();
-
                 // 402 Payment Required, Or something else
-                throw new CHttpException(402, 'Cheap Bastard, you need more funds');
+                throw new CHttpException(402, 'Cheap Bastard, you need more funds'.$user->balance ." reserved: " .$user->reservedPayment());
             }
         }
     }

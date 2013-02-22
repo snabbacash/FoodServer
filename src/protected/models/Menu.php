@@ -11,8 +11,11 @@ class Menu extends CModel
 	 */
 	public static function findByDate($date)
 	{
-		$meals = Food::model()->findAllByAttributes(array('date'=>$date));
-
+		$meals = Food::model()->findAll(array(
+				'condition'=>'date=:date OR date IS NULL',
+				'params'=>array(':date'=>$date),
+				'order'=>'date',
+		));
 		// Set the wrapper as there's no model for this.
 		$menu = new stdClass();
 		$menu->date = $date;
@@ -26,8 +29,11 @@ class Menu extends CModel
 	 */
 	public function findByWeek($week)
 	{
-		// @TODO errr how to group these by date?
-		$menus = Food::model()->findAll('WEEK(date,1)=:week', array(':week'=>$week));
+		$menus = Food::model()->findAll(array(
+				'condition'=>'WEEK(date,1)=:week OR date IS NULL',
+				'params'=>array(':week'=>$week),
+				'order'=>'date',
+		));
 		return $menus;
 
 	}

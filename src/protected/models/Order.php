@@ -124,7 +124,7 @@ class Order extends CActiveRecord
                 $transaction->delete();
                 throw new CHttpException(500, "Unable to save user");
             }
-            $this->setAttribute("status","payed");
+            $this->setAttribute("status", "paid");
             $this->setAttribute("transaction", $transaction->getPrimaryKey());
             $this->save();
         }
