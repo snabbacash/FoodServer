@@ -5,8 +5,9 @@
  *
  * The followings are the available columns in table 'Transaction':
  * @property string $id
+ * @property string $user
  * @property string $timestamp
- * @property integer $amount
+ * @property string $amount
  */
 class Transaction extends CActiveRecord
 {
@@ -32,11 +33,15 @@ class Transaction extends CActiveRecord
 	 */
 	public function rules()
 	{
+		// NOTE: you should only define rules for those attributes that
+		// will receive user inputs.
 		return array(
-			array('timestamp, amount', 'required'),
-			array('amount', 'numerical', 'integerOnly'=>false),
+			array('user, timestamp, amount', 'required'),
+			array('user', 'length', 'max'=>10),
+			array('amount', 'length', 'max'=>5),
 			// The following rule is used by search().
-			array('id, timestamp, amount', 'safe', 'on'=>'search'),
+			// Please remove those attributes that should not be searched.
+			array('id, user, timestamp, amount', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,8 +50,11 @@ class Transaction extends CActiveRecord
 	 */
 	public function relations()
 	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
 		return array(
 			'orders' => array(self::HAS_MANY, 'Order', 'transaction'),
+			'user0' => array(self::BELONGS_TO, 'User', 'user'),
 		);
 	}
 
@@ -57,6 +65,7 @@ class Transaction extends CActiveRecord
 	{
 		return array(
 			'id' => 'Id',
+			'user' => 'User',
 			'timestamp' => 'Timestamp',
 			'amount' => 'Amount',
 		);
@@ -68,10 +77,18 @@ class Transaction extends CActiveRecord
 	 */
 	public function search()
 	{
+		// Warning: Please modify the following code to remove attributes that
+		// should not be searched.
+
 		$criteria=new CDbCriteria;
+
 		$criteria->compare('id',$this->id,true);
+
+		$criteria->compare('user',$this->user,true);
+
 		$criteria->compare('timestamp',$this->timestamp,true);
-		$criteria->compare('amount',$this->amount);
+
+		$criteria->compare('amount',$this->amount,true);
 
 		return new CActiveDataProvider('Transaction', array(
 			'criteria'=>$criteria,

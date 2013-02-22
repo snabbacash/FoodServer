@@ -24,7 +24,7 @@ class OrderController extends Controller
 	 * Returns all orders for the specified date
 	 * @param string $date date in YYYY-MM-DD format
 	 */
-	public function actionList($date)
+	public function actionListDate($date)
 	{
 		// Make sure $date is in the sought format
 		$time = CDateTimeParser::parse($date, 'yyyy-MM-dd');
@@ -43,18 +43,24 @@ class OrderController extends Controller
 
 		$this->sendResponse($jsonData);
 	}
-    public function actionListUser($username)
+    public function actionList()
     {
-        $user = User::model()->findByAttributes(array('username'=>$username));
-        $orders = Order::model()->findAllByAttributes(array("user"=>$user->id));
+        $user = User::model()->findByToken($this->token);
         
-        $jsonData = array();
-        foreach ($orders as $order)
-        {
-            $jsonData[] = $this->getOrderArray($order);
-        }
+        if($user->role->name == "amica"){
+          $this->actionListStatus("pending");
+          break;
+        } else{
+            $orders = Order::model()->findAllByAttributes(array("user"=>$user->id));
+        
+            $jsonData = array();
+            foreach ($orders as $order)
+            {
+                $jsonData[] = $this->getOrderArray($order);
+            }
 
-        $this->sendResponse($jsonData);
+            $this->sendResponse($jsonData);
+        }
     }
 	/**
 	 * Returns all orders for the specified status
@@ -87,6 +93,33 @@ class OrderController extends Controller
 	{
         $this->sendResponse((object) $this->getOrderArray($this->getOrder($id)));
 	}
+
+    /**
+     *   Lets a User delete own orders
+    */
+    public function actionDelete($id){
+        $user = User::model()->findByToken($this->token);
+        $order = Order::model()->findByPk($id);
+       
+
+        if($order->transaction!==null)
+            throw new CHttpException(403, 'You can\'t delete a Paid order');
+
+        if($order->user != $user->id)
+            throw new CHttpException(403, 'You can only delete your own orders');
+
+
+        if( OrderItem::model()->deleteAllByAttributes(array('order'=>$order->id))
+            && $order->delete())
+        {
+            $this->sendResponse('Order deleted');
+        } else {
+            throw new CHttpException(500, 'Could not delete order');
+        }
+
+
+    }
+
 
 	/**
 	 * Create a new order.
@@ -128,16 +161,19 @@ class OrderController extends Controller
 	{
         $order = $this->getOrder($id);
 		$this->validate('orders.update', $this->decodedJsonData);
-        $order->setAttribute("status", $this->decodedJsonData->status);
+        
+        if(isset($this->decodedJsonData->status))
+            $order->setAttribute("status", $this->decodedJsonData->status);
         
         if(!is_null($order->transaction) && isset($this->decodedJsonData->items)){
             throw new CHttpException(400, "Cant't change items, Order $id already paid");
+
         }else{
             if(isset($this->decodedJsonData->items)){
-                foreach($order->orderItems as $orderItem){
+                  foreach($order->orderItems as $orderItem){
                     $exists = false;
                     foreach($this->decodedJsonData->items as $key => $newOrderItem){
-                        if($orderItem->product == $newOrderItem->product){
+                        if($orderItem->product == $newOrderItem->id){
                             $orderItem->setAttribute("amount", $newOrderItem->amount);
                             unset($this->decodedJsonData->items[$key]);
                             $exists = true;
@@ -151,7 +187,7 @@ class OrderController extends Controller
                 foreach($this->decodedJsonData->items as $item){
                     $orderItem = new OrderItem();
                     $orderItem->setAttribute("order", $id);
-                    $orderItem->setAttribute("product", $item->product);
+                    $orderItem->setAttribute("product", $item->id);
                     $orderItem->setAttribute("amount", $item->amount);
                     if (!$orderItem->save())
                         throw new CHttpException(500, 'Unable to save orderItem');

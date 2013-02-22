@@ -7,7 +7,7 @@
 			"items": {
 				"type": "object",
 				"properties": {
-					"product" : { "type": "integer", "required": true },
+					"id" : { "type": "integer", "required": true },
 					"amount" : { "type": "integer", "required": true }
 				},
 				"additionalProperties": false

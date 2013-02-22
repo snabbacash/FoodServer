@@ -65,14 +65,18 @@ return array(
 				array('menu/list', 		  'pattern'	=>'menu/<week:\d{1,2}>', 			'verb'=>'GET'),
 				
 				
-				array('order/list', 	  'pattern'	=>'orders/<date:\d{4}-\d{2}-\d{2}>', 'verb'=>'GET'),
+				array('order/listDate', 	  'pattern'	=>'orders/<date:\d{4}-\d{2}-\d{2}>', 'verb'=>'GET'),
 				array('order/listStatus', 'pattern'	=>'orders/<status:(new|refunded|paid|pending)>', 'verb'=>'GET'),
-				// Keep this one after listStatus
-				array('order/listUser',	  'pattern'	=>'orders/<username:\w+>', 			'verb'=>'GET'),
+				
 				
 				array('order/create',  	  'pattern'	=>'orders', 						'verb'=>'POST'),
+				array('order/list',   	  'pattern'	=>'orders', 						'verb'=>'GET'),
+
 				array('order/view', 	  'pattern'	=>'orders/<id:\d+>', 				'verb'=>'GET'),
 				array('order/update', 	  'pattern'	=>'orders/<id:\d+>', 				'verb'=>'PUT'),
+				array('order/delete', 	  'pattern'	=>'orders/<id:\d+>', 				'verb'=>'DELETE'),
+				// Keep this one last
+				//array('order/listUser',	  'pattern'	=>'orders/<username:\w+>', 			'verb'=>'GET'),
 				
 				array('user/view', 		  'pattern'	=>'user/<username:\w+>', 			'verb'=>'GET'),
 				array('user/update', 	  'pattern'	=>'user/<username:\w+>', 			'verb'=>'PUT'),

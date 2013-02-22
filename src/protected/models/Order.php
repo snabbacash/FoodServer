@@ -17,7 +17,10 @@ class Order extends CActiveRecord
 	 * Order statuses
 	 */
 	const STATUS_NEW = 'new';
-	const STATUS_COMPLETED = 'completed';
+	//const STATUS_COMPLETED = 'completed';
+	const STATUS_PAID		= 'paid';
+	const STATUS_REFUNDED	= 'refunded';
+
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -113,10 +116,15 @@ class Order extends CActiveRecord
     public function pay(){
 		$user =  User::model()->findByAttributes(array('id'=>$this->user));
         $price = $this->price();
-        if(!isset($this->transaction) && $user->balance >= $price){
+        if ($user->balance < $price)
+            throw new CHttpException(402, "Not enough money");
+
+        if(!isset($this->transaction)){
             $transaction = new Transaction();
             $transaction->setAttribute("amount", -$price);
             $transaction->setAttribute("timestamp", time());
+            $transaction->setAttribute("user", $user->id);
+
             if (!$transaction->save())
                 throw new CHttpException(500, "Unable to save transaction".print_r($transaction->getErrors(),true));
             $user->setAttribute("balance", $user->balance-$price);
@@ -127,7 +135,9 @@ class Order extends CActiveRecord
             $this->setAttribute("status", "paid");
             $this->setAttribute("transaction", $transaction->getPrimaryKey());
             $this->save();
-        }
+        } else {
+            throw new CHttpException(403, "Already paid");
+		}
     }
     public function refund(){
        
@@ -135,12 +145,18 @@ class Order extends CActiveRecord
             $user =  User::model()->findByAttributes(array('id'=>$this->user));
             $transaction = Transaction::model()->findByPk($this->transaction);
             //det blir minus för transaction som "Kostar" är -. -+- = +
+            $refundTransaction = new Transaction();
+            $refundTransaction->setAttribute('amount', -$transaction->amount);
+			$refundTransaction->setAttribute("user", $user->id);
+            $refundTransaction->setAttribute("timestamp", time());
+			$refundTransaction->save();
+
             $user->setAttribute("balance", $user->balance-$transaction->amount);
             if (!$user->save()){
                 throw new CHttpException(500, "Unable to save user");
             }
             $this->setAttribute("transaction", null);
-            $this->setAttribute("status","refunded");
+            $this->setAttribute("status", "refunded");
             $this->save();
             $transaction->delete();
         }
