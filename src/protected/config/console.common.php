@@ -29,6 +29,7 @@ return array(
         ),
  
         // Your DB connection, should be defined in protected/config/main.local.php
+        // havent figured out how to yet
         'db'=>array(
         	'connectionString'=>'mysql:host=localhost;port=3307;dbname=cash',
             'username'=>'cash',
