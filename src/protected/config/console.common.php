@@ -30,7 +30,7 @@ return array(
  
         // Your DB connection, should be defined in protected/config/main.local.php
         'db'=>array(
-        	'connectionString'=>'mysql:host=localhost;port=3306;dbname=cash',
+        	'connectionString'=>'mysql:host=localhost;port=3307;dbname=cash',
             'username'=>'cash',
             'password'=>'cash',
 		),
