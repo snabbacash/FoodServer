@@ -27,34 +27,37 @@ class GetAmicaCommand extends CConsoleCommand {
 				$food = new Food;
 				$food->date=$date;
 				$food->save();
+				if(isset($oneFood['parts'])){
+					foreach ($oneFood['parts'] as $part ) {
+						echo ".";
 
-				foreach ($oneFood['parts'] as $part ) {
-					echo ".";
-
-					$fp = new FoodPart;
-					$fp->food  = $food->id;
-					$fp->name  = $part['name'];
+						$fp = new FoodPart;
+						$fp->food  = $food->id;
+						$fp->name  = $part['name'];
+						
+						if ( isset($part['info']) ) 
+							$fp->diets  = $part['info'];
+						
+						$fp->save();
+						
+					} // oneFood parts
 					
-					if ( isset($part['info']) ) 
-						$fp->diets  = $part['info'];
-					
-					$fp->save();
-					
-				} // oneFood parts
-				
-				foreach ($oneFood['price'] as $group => $price ){				
-					echo ".";
-					
-					$userRole = UserRole::model()->	findByAttributes(array('name'=>$group));
-					
-					$fprice = new FoodPrice();
-					$fprice->food = $food->id;
-					$fprice->userrole = $userRole->id;
-					$fprice->price = $price;
-					
-					$fprice->save();	
-					
-				} // Price
+					foreach ($oneFood['price'] as $group => $price ){				
+						echo ".";
+						
+						$userRole = UserRole::model()->	findByAttributes(array('name'=>$group));
+						
+						$fprice = new FoodPrice();
+						$fprice->food = $food->id;
+						$fprice->userrole = $userRole->id;
+						$fprice->price = $price;
+						
+						$fprice->save();	
+						
+					} // Price
+				} else {
+					$food->delete();
+				}
 				echo "\n";
 					
 			} // OneFood 

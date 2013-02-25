@@ -2,33 +2,33 @@
 include('simple_html_dom.php');
 
 class AmicaParser{
-    private $arcadaUrls = array(
+	private $arcadaUrls = array(
 		'fi' => 'http://www.amica.fi/fi/arcada#Ruokalista',
 		'se' => 'http://www.amica.fi/arcada#Meny',
 		'en' => 'http://www.amica.fi/en/arcada#Menu',
 	);
 	private $infoArrOrig = array(
-	    "se" => array(
-	        "*" => "Må gott",
-	        "M" => "Mjölkfri",
-	        "G" => "Glutenfri",
-	        "L" => "Laktosfri",
-	        "VL" => "Laktosfattig"
-	    ),
-	    "fi" => array(
-	        "*" => "Voi hyvin",
-	        "M" => "Maidoton",
-	        "G" => "Gluteeniton",
-	        "L" => "Laktoositon",
-	        "VL" => "Vähälaktoosinen"
-	    ),
-	    "en" => array(
-	        "*" => "Feel well",
-	        "M" => "Milk-free",
-	        "G" => "Gluten-free",
-	        "L" => "Lactose-free",
-	        "VL" => "Low in lactose"
-	    ),
+		"se" => array(
+			"*" => "Må gott",
+			"M" => "Mjölkfri",
+			"G" => "Glutenfri",
+			"L" => "Laktosfri",
+			"VL" => "Laktosfattig"
+		),
+		"fi" => array(
+			"*" => "Voi hyvin",
+			"M" => "Maidoton",
+			"G" => "Gluteeniton",
+			"L" => "Laktoositon",
+			"VL" => "Vähälaktoosinen"
+		),
+		"en" => array(
+			"*" => "Feel well",
+			"M" => "Milk-free",
+			"G" => "Gluten-free",
+			"L" => "Lactose-free",
+			"VL" => "Low in lactose"
+		),
 	);
 
 	private $languages = array('fi', 'se', 'en');
@@ -46,27 +46,29 @@ class AmicaParser{
 	function __parse($lang){
 		$html =  str_get_html(file_get_contents($this->arcadaUrls[$lang]));
 		$ruokaLista = trim($html->find('body .ContentArea', 2)->innertext);
+
 		$ruokaLista = preg_replace(
-				array(
-					'/<br \/>/',
-					'/&nbsp;/',
-					'/<p>/',
-					'/<\/p>/',
-					'/(\d)([^\d,])/',
-					'/(\d{1})£/i',
-					'/(\()(['.join("|",array_keys($this->infoArrOrig['se'])).'|,| ]+)(\))/i',
-                    '/([A-Za-z])(\d)/'
-				),
-				array(
-					'|',
-					'',
-					'|',
-					'|',
-					'$1£$2',
-					'$1)£',
-					'{$2}',
-                    '$1{}$2'
-				), $ruokaLista);
+			array(
+				'/.*(M&aring;ndag|Maanantai|Monday)/i',
+				'/<br \/>/',
+				'/&nbsp;/',
+				'/<p>/',
+				'/<\/p>/',
+				'/(\d)([^\d,])/',
+				'/(\d{1})£/i',
+				'/(\()(['.join("|",array_keys($this->infoArrOrig[$lang])).'|,| ]+)(\))/i',
+				'/([A-Za-z])(\d)/'
+			 ), array(
+				'$1',
+				'|',
+				'',
+				'|',
+				'|',
+				'$1£$2',
+				'$1)£',
+				'{$2}',
+				'$1{}$2'
+			), $ruokaLista);
 
 		$arr = array();
 		$day = "";
@@ -89,6 +91,7 @@ class AmicaParser{
 		foreach($arr as $day => $line){
 			$arr[$day] = array();
 			$line = preg_split("/£/", $line, 0, PREG_SPLIT_NO_EMPTY);
+				$add = true;
 				foreach($line as $i => $var){
 					$line[$i] = array();
 					foreach(preg_split('/\}/', trim($var), 0, PREG_SPLIT_NO_EMPTY) as $j => $part){
@@ -106,18 +109,23 @@ class AmicaParser{
 
 						} else {
 							$prices = preg_split('/(\d{1,2},\d{2})/', trim($part," ()"), 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-							$line[$i]['price']= array(
-								'student'  => str_replace(',', '.', $prices[0]),
-								'other'    => str_replace(',', '.', $prices[1]),
-								'staff'    => str_replace(',', '.', $prices[2]),
-							);
+							if(count($prices)!=3){
+								$add=false;
+							} else {
+
+								$line[$i]['price']= array(
+									'student'  => str_replace(',', '.', $prices[0]),
+									'other'    => str_replace(',', '.', $prices[1]),
+									'staff'    => str_replace(',', '.', $prices[2]),
+								);
+							}
 							
 						}
 					}
 				}
 				unset($arr[$day]);
-
-				$arr[date("Y-n-j", strtotime('this week +'.array_search($day, $days).'days'))] = $line;
+				if($add)
+					$arr[date("Y-n-j", strtotime('this week +'.array_search($day, $days).'days'))] = $line;
 		}
 		return $arr;
 
