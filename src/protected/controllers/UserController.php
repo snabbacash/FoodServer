@@ -24,7 +24,7 @@ class UserController extends Controller
 			),
 		), parent::filters());
 	}
-	
+
 	/**
 	 * Returns details about the user
 	 * @throws CHttpException if the user can't be found
@@ -35,7 +35,7 @@ class UserController extends Controller
 
 		return $this->actionView($user->username);
 	}
-	
+
 	/**
 	 * Display account information.
 	 *
@@ -58,12 +58,36 @@ class UserController extends Controller
 	 */
 	public function actionUpdate($username)
 	{
-		$user = User::model()->findByAttributes(array('username'=>$username));
-		$data = $this->getPutData();
-		// Forbidden
-		if (isset($data['user']))
-			return $this->sendResponse(403);
 
+		$requestUser = User::model()->findByToken($this->token);
+		$user = User::model()->findByAttributes(array('username'=>$username));
+		$data = $this->decodedJsonData;
+
+		if(isset($data->balance)){
+			if ($requestUser->role->name == "amica"){
+				$amount = $data->balance;
+				if( $amount<0 && $user->balance < (-$amount)){
+					return $this->sendResponse(403, "Not enough funds");
+				}
+				$transaction = new Transaction();
+	            $transaction->amount = $amount;
+	            $transaction->user = $user->id;
+	            $transaction->timestamp = time();
+
+
+	            $currentBalance = $user->balance;
+	            $user->balance = $currentBalance+$amount;
+
+	            if(!$transaction->save ||!$user->save()){
+	            	return $this->sendResponse(500, "Shit went bananas");
+	            }
+
+			} else {
+				return $this->sendResponse(403, "Only Kassatanter is allowed to update balance");
+			}
+		}
 		$this->sendResponse($user);
 	}
+
+
 }
